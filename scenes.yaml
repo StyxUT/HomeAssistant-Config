@@ -1,0 +1,19 @@
+- id: '1609631553100'
+  name: Bed Time
+  entities:
+    switch.back_xmas_lights:
+      friendly_name: Master Bedroom Lamp
+      state: 'on'
+    switch.vr_main:
+      friendly_name: VR Main
+      state: 'off'
+    switch.vr_sensor_1:
+      friendly_name: VR Sensor 1
+      state: 'off'
+    switch.vr_sensor_2:
+      friendly_name: VR Sensor 2
+      state: 'off'
+    switch.garage_door:
+      friendly_name: Garage Door
+      state: 'off'
+  icon: hass:bed

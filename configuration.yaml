@@ -1,0 +1,50 @@
+homeassistant:
+
+  name: West Haven Home
+  elevation: 1302
+  time_zone: America/Denver
+  unit_system: imperial
+  internal_url: "http://homeassistant.home:8123"
+  external_url: "https://homeassistant.styxut.net"
+
+  auth_providers:
+  - type: homeassistant
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+  use_x_forwarded_for: false
+  trusted_proxies:
+    - 192.168.0.0/24
+    # - 10.42.0.0/16
+    # 192.168.0.221
+    # - 172.17.0.1
+  ip_ban_enabled: true
+  login_attempts_threshold: 10
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+tplink:
+  discovery: true
+  switch:
+    - host: 192.168.107.9
+    - host: 192.168.107.10
+    - host: 192.168.107.11
+
+wemo:
+  discovery: true
+  static:
+    - 192.168.107.19
+    - 192.168.107.20
+    - 192.168.107.21
+
+homekit:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
