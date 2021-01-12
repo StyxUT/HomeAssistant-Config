@@ -1,11 +1,10 @@
 homeassistant:
-
-  name: West Haven Home
+  name: Home
   elevation: 1302
   time_zone: America/Denver
   unit_system: imperial
   internal_url: "http://homeassistant.home:8123"
-  external_url: "https://homeassistant.styxut.net"
+  external_url: !secret external_url
 
   auth_providers:
   - type: homeassistant
@@ -19,8 +18,8 @@ http:
   trusted_proxies:
     - 192.168.0.0/24
     # - 10.42.0.0/16
-    # 192.168.0.221
     # - 172.17.0.1
+    # - 192.168.0.221
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
@@ -34,17 +33,40 @@ tplink:
     - host: 192.168.107.9
     - host: 192.168.107.10
     - host: 192.168.107.11
+    - host: 192.168.107.43 # Deck Light (3-way)
+    - host: 192.168.107.44 # Bonus Room Enterance Light (3-way)
 
 wemo:
   discovery: true
   static:
+    - 192.168.107.45  # Kitchen Light
     - 192.168.107.19
     - 192.168.107.20
     - 192.168.107.21
+    - 192.168.107.47 # Plant Light
 
 homekit:
+
+# ios action buttons
+ios:
+  actions:
+    - name: "Let's Go To Bed"
+      background_color: "#000000"
+      label:
+        text: "Let's Go To Bed."
+        color: "#33adff"
+      icon:
+        icon: hass:weather-night
+        color: "#951ad3"
+
+# synology_dsm:
+#   - host: "https://synology.home"
+#     username: !secret synology_dsm_login
+#     password: !secret synology_dsm_password
 
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
+zone: !include zones.yaml
+

@@ -1,19 +1,34 @@
-- id: '1609631553100'
+- id: sce-BedTime
   name: Bed Time
   entities:
-    switch.back_xmas_lights:
-      friendly_name: Master Bedroom Lamp
+    switch.master_bedroom_lamp:
+      state: 'on'
+    switch.deck_light:
+      state: 'on'
+    switch.kitchen_light:
+      state: 'on'
+    switch.bonus_room_enterance_light:
       state: 'on'
     switch.vr_main:
-      friendly_name: VR Main
       state: 'off'
     switch.vr_sensor_1:
-      friendly_name: VR Sensor 1
       state: 'off'
     switch.vr_sensor_2:
-      friendly_name: VR Sensor 2
       state: 'off'
     switch.garage_door:
-      friendly_name: Garage Door
+        state: 'off'
+  icon: hass:weather-night
+- id: sce-GoodNight
+  name: Good Night
+  entities:
+    switch.master_bedroom_lamp:
+      state: 'off'
+    switch.deck_light:
+      state: 'off'
+    switch.kitchen_light:
+      state: 'off'
+    switch.garage_door:
+      state: 'off'
+    switch.bonus_room_enterance_light:
       state: 'off'
   icon: hass:bed
