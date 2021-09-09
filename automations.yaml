@@ -112,7 +112,10 @@
   description: Someone is ariving home, turn on the external lights for 10 minutes.
   trigger:
     platform: state
-    entity_id: person.StyxUT, person.traci, person.samantha
+    entity_id: 
+      - person.StyxUT
+      - person.traci
+      - person.samantha
   condition:
   - condition: template
     value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
@@ -128,114 +131,35 @@
   - delay: 00:10:00
   - service: homeassistant.turn_off
     entity_id: switch.external_lights
+
+#########################################################################
+###  Notifications
+#########################################################################
+#https://community.home-assistant.io/t/automation-for-entering-and-leaving-zones/265000/3
 - id: notify_person_is_ariving_home
   alias: Notify when someone enters the Home Area
   description: Send a notification when someone enters the Home Area
   trigger:
-    platform: state
-    entity_id: person.StyxUT, person.traci, person.samantha
-  condition:
-  - condition: template
-    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
-  - condition: template
-    value_template: '{{ trigger.to_state == ''Home Area'' }}'
+    - platform: zone
+      entity_id:
+         - person.traci
+         - person.styxut
+         - person.samantha
+      zone: zone.home_area
+      event: enter
   action:
-  - service: notify.mobile_app_erics_iphone
-    data_template:
-      title: Arriving Home {{ states.sensor.time.state }}
-      message: '{{ trigger.to_state.attributes.friendly_name }} is arriving home.'
-#########################################################################
-###  Lawn Mower Power
-#########################################################################
-# - id: lawn_mower_charging_on_night
-#   alias: Lawn Mower - Charging On
-#   description: Turn on both lawn mower outlets to allow charging
-#   trigger:
-#     platform: time
-#     at: '23:10:00'
-#   action:
-#   - service: homeassistant.turn_on
-#     entity_id: switch.lawn_mower_north
-#   - service: homeassistant.turn_on
-#     entity_id: switch.external_dual_outlet
-
-# - id: lawn_mower_south_off_morning
-#   alias: Lawn Mower South - Off 
-#   description: Turn off the south mower to allow the north mower to run (morning schedule)
-#   trigger:
-#     platform: time
-#     at: '05:55:00'
-#   condition:
-#   - condition: time
-#     weekday:
-#       - mon
-#       - wed
-#       - fri
-#   action:
-#   - service: homeassistant.turn_off
-#     entity_id: switch.external_dual_outlet
-
-# - id: lawn_mower_north_off_morning
-#   alias: Lawn Mower North - Off
-#   description: Turn off the north mower to allow the south mower to run (morning schedule)
-#   trigger:
-#     platform: time
-#     at: '05:55:00'
-#   condition:
-#   - condition: time
-#     weekday:
-#       - tue
-#       - thu
-#       - sat
-#       - sun
-#   action:
-#   - service: homeassistant.turn_off
-#     entity_id: switch.lawn_mower_north
-
-# - id: lawn_mower_charging_on_noon
-#   alias: Lawn Mower - Charging On
-#   description: Turn on both lawn mower outlets to allow charging
-#   trigger:
-#     platform: time
-#     at: '12:10:00'
-#   action:
-#   - service: homeassistant.turn_on
-#     entity_id: switch.lawn_mower_north
-#   - service: homeassistant.turn_on
-#     entity_id: switch.external_dual_outlet
-
-# - id: lawn_mower_south_off_night
-#   alias: Lawn Mower South - Off 
-#   description: Turn off the south mower to allow the north mower to run (night schedule)
-#   trigger:
-#     platform: time
-#     at: '20:55:00'
-#   condition:
-#   - condition: time
-#     weekday:
-#       - tue
-#       - thu
-#       - sat
-#       - sun
-#   action:
-#   - service: homeassistant.turn_off
-#     entity_id: switch.external_dual_outlet
-
-# - id: lawn_mower_north_off_night
-#   alias: Lawn Mower North - Off
-#   description: Turn off the north mower to allow the south mower to run (night schedule)
-#   trigger:
-#     platform: time
-#     at: '20:55:00'
-#   condition:
-#   - condition: time
-#     weekday:
-#       - mon
-#       - wed
-#       - fri
-#   action:
-#   - service: homeassistant.turn_off
-#     entity_id: switch.lawn_mower_north
+    - service: >
+        {% if trigger.from_state.attributes.friendly_name == "Traci" %}
+          {{ notify.mobile_app_erics_iphone }}
+        {% else %}
+          {{ notify.home_resident_devices }}
+        {% endif %}
+      data:
+        title: >
+          {{ trigger.attributes.friendly_name }} is Arriving Home
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} is arriving home.
+  mode: single
 
 #########################################################################
 ###  Night Motion Detection
@@ -266,6 +190,7 @@
   - service: homeassistant.turn_off
     entity_id: switch.deck_light
   mode: restart
+
 #########################################################################
 ###  Temperature Control
 #########################################################################
@@ -342,6 +267,7 @@
     data:
       entity_id: climate.hallway
       hvac_mode: heat_cool
+
 #########################################################################
 ###  Shelly
 #########################################################################

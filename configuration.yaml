@@ -7,9 +7,13 @@ homeassistant:
   longitude: !secret home_longitude
   internal_url: "http://homeassistant.home:8123"
   external_url: !secret external_url
+  currency: USD
 
   auth_providers:
   - type: homeassistant
+  - type: trusted_networks
+    trusted_networks:
+    - 192.168.0.0/24
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -33,20 +37,39 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
+notify:
+  - name: home_resident_devices
+    platform: group
+    services: 
+      - service: erics_iphone_2
+      - service: fairy_s_phone
+
 python_script:
 
 # MQTT - mosquitto
 mqtt:
   broker: k3s-mgmt-001.home
+  port: 1883
   client_id: home-assistant
   discovery: true
   discovery_prefix: homeassistant
+  username: !secret mqtt-user
+  password: !secret mqtt-password
 
 # Text to speech
 tts:
   - platform: google_translate
 
 homekit:
+  - name: HASS Bridge 1
+    filter:
+      include_domains:
+        - light
+        - switch
+      exclude_entity_globs:
+        - switch.*schedule
+        - sensor.*
+        - switch.zone*
 
 neato:
   client_id: !secret neato_client_id
@@ -90,8 +113,8 @@ wemo:
     - !secret master_bedroom_lamp
     - !secret salt_lamp
     # smaller plugs
-    - !secret plant_light
-    - !secret lawn_mower_north
+    #- !secret plant_light
+    #- !secret lawn_mower_north
     - !secret desk_power
 
 #group: !include groups.yaml
@@ -129,5 +152,3 @@ ios:
     icon:
       icon: mdi:VirtualReality 
       color: "#951ad3"
-
-
