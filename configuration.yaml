@@ -11,9 +11,6 @@ homeassistant:
 
   auth_providers:
   - type: homeassistant
-  - type: trusted_networks
-    trusted_networks:
-    - 192.168.0.0/24
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
@@ -22,17 +19,10 @@ sun:
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
-  #Existed Originally ->> http-request set-header X-Forwarded-Port %[dst_port] ----from HA Proxy Backend pass through
-  #       http-request set-header X-Client-IP %[src]
-  #       http-request add-header X-Forwarded-Proto https if { ssl_fc }
-  #testing ->> http-request replace-value x-forwarded-for ^ "%[hdr(x-forwarded-for)], %[src]"
   use_x_forwarded_for: true
   trusted_proxies:    
     - 192.168.0.0/24
     - 127.0.0.1
-    - 192.168.0.211
-    - 192.168.0.221
-    - 192.168.0.222
 
   ip_ban_enabled: true
   login_attempts_threshold: 10
@@ -41,14 +31,20 @@ notify:
   - name: home_resident_devices
     platform: group
     services: 
-      - service: erics_iphone_2
-      - service: fairy_s_phone
+    - service: mobile_app_styx_iphone
+    - service: mobile_app_styx_ipad
+    - service: mobile_app_fairys_iphone
+  - name: styx_devices
+    platform: group
+    services: 
+    - service: mobile_app_styx_iphone
+    - service: mobile_app_styx_ipad
 
 python_script:
 
 # MQTT - mosquitto
 mqtt:
-  broker: k3s-mgmt-001.home
+  broker: k3s-nodes.home
   port: 1883
   client_id: home-assistant
   discovery: true
@@ -66,6 +62,8 @@ homekit:
       include_domains:
         - light
         - switch
+        - automation
+        - script
       exclude_entity_globs:
         - switch.*schedule
         - sensor.*
@@ -134,21 +132,21 @@ ios:
     icon:
       icon: hass:weather-night
       color: "#951ad3"
-# actions:
-  - name: "Turn On VR"
-    background_color: "#000000"
-    label:
-      text: "Turn on VR."
-      color: "#33adff"
-    icon:
-      icon: mdi:VirtualReality 
-      color: "#951ad3"
-#  actions:
-  - name: "Turn Off VR"
-    background_color: "#000000"
-    label:
-      text: "Turn off VR."
-      color: "#33adff"
-    icon:
-      icon: mdi:VirtualReality 
-      color: "#951ad3"
+# # actions:
+#   - name: "Turn On VR"
+#     background_color: "#000000"
+#     label:
+#       text: "Turn on VR."
+#       color: "#33adff"
+#     icon:
+#       icon: mdi:VirtualReality 
+#       color: "#951ad3"
+# #  actions:
+#   - name: "Turn Off VR"
+#     background_color: "#000000"
+#     label:
+#       text: "Turn off VR."
+#       color: "#33adff"
+#     icon:
+#       icon: mdi:VirtualReality 
+#       color: "#951ad3"

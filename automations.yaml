@@ -149,16 +149,66 @@
       event: enter
   action:
     - service: >
-        {% if trigger.from_state.attributes.friendly_name == "Traci" %}
-          {{ notify.mobile_app_erics_iphone }}
+        {% if trigger.from_state.attributes.friendly_name == 'Traci' %}
+          notify.styx_devices
         {% else %}
-          {{ notify.home_resident_devices }}
+          notify.home_resident_devices
         {% endif %}
       data:
         title: >
-          {{ trigger.attributes.friendly_name }} is Arriving Home
+          {{ trigger.to_state.attributes.friendly_name }} is Arriving Home
         message: >
           {{ trigger.to_state.attributes.friendly_name }} is arriving home.
+  mode: single
+
+- id: notify_person_is_leaving_home_area
+  alias: Notify when someone leaving the Home Area
+  description: Send a notification when someone leaves the Home Area
+  trigger:
+    - platform: zone
+      entity_id:
+         - person.traci
+         - person.styxut
+         - person.samantha
+      zone: zone.home_area
+      event: leave
+  action:
+    - service: >
+        {% if trigger.from_state.attributes.friendly_name == 'Traci' %}
+          notify.styx_devices
+        {% else %}
+          notify.home_resident_devices
+        {% endif %}
+      data:
+        title: >
+          {{ trigger.to_state.attributes.friendly_name }} is Leaving Home Area
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} is Leaving home area.
+  mode: single
+
+- id: notify_person_is_leaving_home
+  alias: Notify when someone leaves the Home zone
+  description: Send a notification when someone leaves the Home zone
+  trigger:
+    - platform: zone
+      entity_id:
+         - person.traci
+         - person.styxut
+         - person.samantha
+      zone: zone.home
+      event: leave
+  action:
+    - service: >
+        {% if trigger.from_state.attributes.friendly_name == 'Traci' %}
+          notify.styx_devices
+        {% else %}
+          notify.home_resident_devices
+        {% endif %}
+      data:
+        title: >
+          {{ trigger.to_state.attributes.friendly_name }} has Left Home
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} has left home.
   mode: single
 
 #########################################################################
@@ -271,8 +321,8 @@
 #########################################################################
 ###  Shelly
 #########################################################################
-- id: shelly_announce
-  alias: 'Shelly Announce'
+- id: shellies_announce
+  alias: 'Shellies Announce'
   trigger:
     - platform: homeassistant
       event: start
@@ -284,8 +334,8 @@
       topic: shellies/command
       payload: announce
   mode: single
-- id: shelly_discovery
-  alias: 'Shelly Discovery'
+- id: shellies_discovery
+  alias: 'Shellies Discovery'
   mode: queued
   max: 999
   trigger:
