@@ -1,0 +1,6 @@
+fan.master_bedroom_fan: {}
+sensor.landroid_fred_battery:
+  friendly_name: Landroid Fred battery
+sensor.landroid_fred_error: {}
+sensor.landroid_fred_status:
+  friendly_name: Landroid Fred status

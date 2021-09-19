@@ -242,6 +242,32 @@
   mode: restart
 
 #########################################################################
+###  Tasmotas
+#########################################################################
+# - id: tasmotas_announce
+#   alias: Tasmotas Announce
+#   description: 'Prevents devices from going Unavailable'
+#   trigger:
+#     - platform: Home Assistant
+#       event: start
+#     - platform: time_pattern
+#       hours: /1
+#   condition: []
+#   action:
+#     # For reasons that I don't understand, different tasmota devices seem to 
+#     #     subscribe to a different group topic. cmnd/tas vs tas/cmnd
+#     ##
+#     - service: mqtt.publish
+#       data:
+#         topic: cmnd/tasmotas/SetOption19
+#         payload: '0'
+#     - service: mqtt.publish
+#       data:
+#         topic: tasmotas/cmnd/SetOption19
+#         payload: '0'
+#   mode: single
+
+#########################################################################
 ###  Temperature Control
 #########################################################################
 - id: thermostat_afternoon_run_fan
