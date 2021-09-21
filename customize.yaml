@@ -4,3 +4,5 @@ sensor.landroid_fred_battery:
 sensor.landroid_fred_error: {}
 sensor.landroid_fred_status:
   friendly_name: Landroid Fred status
+switch.landroid_mowing:
+  friendly_name: landroid_fred

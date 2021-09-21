@@ -2,12 +2,6 @@ lets_go_to_bed:
   alias: "Lets Go To Bed"
   description: Lighting sequence when heading to bed
   sequence:
-  # - service: homeassistant.turn_oof
-  #   entity_id: switch.vr_main
-  # - service: homeassistant.turn_oof
-  #   entity_id: switch.vr_sensor_1
-  # - service: homeassistant.turn_oof
-  #   entity_id: switch.vr_sensor_2
   - service: homeassistant.turn_off
     entity_id: switch.desk_power
   - service: homeassistant.turn_on
@@ -24,6 +18,10 @@ lets_go_to_bed:
       seconds: 30
   - service: homeassistant.turn_on
     entity_id: switch.master_bedroom_lamp
+  - service: light.turn_on
+    entity_id: light.master_bedroom_light
+    data:
+      brightness: 100
   - delay:
       seconds: 30
   - service: homeassistant.turn_off
@@ -36,15 +34,60 @@ lets_go_to_bed:
       seconds: 30
   - service: homeassistant.turn_off
     entity_id: switch.kitchen_light
-  - service: homeassistant.turn_on
-    entity_id: switch.master_bedroom_fan
   - delay:
-      minutes: 4
+      minutes: 2
+  - service: homeassistant.turn_on
+    entity_id: fan.master_bedroom_fan
+    data:
+      percentage: 25
+  - service: light.turn_on
+    entity_id: light.master_bedroom_light
+    data:
+      brightness: 20
   - service: homeassistant.turn_off
     entity_id: switch.master_bedroom_lamp
   - delay:
+      minutes: 2
+  - service: light.turn_on
+    entity_id: light.master_bedroom_light
+    data:
+      brightness: 10
+  - delay:
+      seconds: 30
+  - service: light.turn_off
+    entity_id: light.master_bedroom_light
+  - delay:
       minutes: 30
-  - service: homeassistant.turn_off
-    entity_id: switch.master_bedroom_fan
+  - service: fan.turn_off
+    entity_id: fan.master_bedroom_fan
   mode: restart
   icon: hass:weather-night
+
+# light_test_script:
+#   alias: light_test_script
+#   sequence:
+#   - service: light.turn_on
+#     entity_id: light.master_bedroom_light
+#     data:
+#       brightness: 100
+#   - service: homeassistant.turn_on
+#     entity_id: fan.master_bedroom_fan
+#     data:
+#       percentage: 25
+#   - delay:
+#       seconds: 15
+#   - service: light.turn_off
+#     entity_id: light.master_bedroom_light
+#   - delay:
+#       seconds: 5
+#   - service: fan.turn_off
+#     entity_id: fan.master_bedroom_fan
+
+# off_test_script:
+#   alias: off_test_script
+#   sequence:
+#   - service: homeassistant.turn_off
+#     entity_id: light.master_bedroom_light
+#   - service: fan.turn_off
+#     entity_id: fan.master_bedroom_fan
+
