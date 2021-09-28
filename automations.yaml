@@ -175,14 +175,14 @@
     - platform: device
       device_id: 28319699b614915a42f1c29b1c6305fd
       domain: nest
-      type: camera_person # available options are: camera_person, camera_sound, camera_motion
+      type: camera_motion # available options are: camera_person, camera_sound, camera_motion
   condition:
   - condition: state
     entity_id: sun.sun
     state: below_horizon
-  - condition: state
-    entity_id: switch.deck_light
-    state: 'off'
+  # - condition: state
+  #   entity_id: switch.deck_light
+  #   state: 'off'
   action:
   - service: homeassistant.turn_on
     entity_id: switch.deck_light
@@ -226,12 +226,13 @@
   trigger:
   - platform: time
     at: '15:45:00'
+  condition: "{{ sensor.hallway_temperature >= 75 }} AND {{ sensor.sensor.shelly_h_t_ac7dca_temperature < 75 }}" # basement shelly
   action:
   - service: climate.set_fan_mode
     data:
       entity_id: climate.hallway
       fan_mode: 'on'
-  - delay: 00:15:00
+  - delay: 00:10:00
   - service: climate.set_fan_mode
     data:
       entity_id: climate.hallway
@@ -241,17 +242,18 @@
       entity_id: climate.hallway
       hvac_mode: heat_cool
 - id: thermostat_afternoon_run_fan_2
-  alias: Thermostat - run fan in afternoon
+  alias: Thermostat - run fan in late afternoon
   description: Run the fan for 15 minutes at 4:30 PM
   trigger:
   - platform: time
     at: '16:30:00'
+  condition: "{{ sensor.hallway_temperature >= 75 }} AND {{ sensor.sensor.shelly_h_t_ac7dca_temperature < 75 }}" # basement shelly
   action:
   - service: climate.set_fan_mode
     data:
       entity_id: climate.hallway
       fan_mode: 'on'
-  - delay: 00:15:00
+  - delay: 00:10:00
   - service: climate.set_fan_mode
     data:
       entity_id: climate.hallway

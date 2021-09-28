@@ -63,6 +63,7 @@ homekit:
         - switch
         - automation
         - script
+        - fan
       exclude_entity_globs:
         - switch.*schedule
         - sensor.*

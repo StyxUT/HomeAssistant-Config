@@ -18,6 +18,8 @@ lets_go_to_bed:
       seconds: 30
   - service: homeassistant.turn_on
     entity_id: switch.master_bedroom_lamp
+  - delay:
+    - seconds: 5
   - service: light.turn_on
     entity_id: light.master_bedroom_light
     data:
@@ -40,20 +42,24 @@ lets_go_to_bed:
     entity_id: fan.master_bedroom_fan
     data:
       percentage: 25
+  - delay:
+    - seconds: 10
   - service: light.turn_on
     entity_id: light.master_bedroom_light
     data:
       brightness: 20
+  - delay:
+    - seconds: 10
   - service: homeassistant.turn_off
     entity_id: switch.master_bedroom_lamp
   - delay:
-      minutes: 2
+      minutes: 1
   - service: light.turn_on
     entity_id: light.master_bedroom_light
     data:
       brightness: 10
   - delay:
-      seconds: 30
+      minutes: 1
   - service: light.turn_off
     entity_id: light.master_bedroom_light
   - delay:
