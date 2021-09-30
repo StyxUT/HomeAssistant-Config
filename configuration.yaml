@@ -85,47 +85,6 @@ nest:
   # Provide the full path exactly as shown under "Subscription name" in Google Cloud Console
   subscriber_id: !secret nest_subscriber_id
 
-# fan:
-#   - platform: mqtt
-#     name: "Master Bedroom Fan"
-#     qos: 1
-#     state_topic: "stat/tasmota_mb_fan/POWER1"
-#     command_topic: "cmnd/tasmota_mb_fan/POWER1"
-#     availability_topic: "tele/tasmota_mb_fan/LWT"
-#     percentage_state_topic: "stat/mb_fan/speed"
-#     percentage_value_template: '{{ ((value | replace("3,","")) | int + 1) * 25 }}'
-#     percentage_command_topic: "cmnd/tasmota_mb_fan/tuyasend4"
-#     percentage_command_template: "3,{{ ((value | int - 1) / 25) | int }}"
-#     preset_mode_state_topic: "stat/tasmota_mb_fan/speed"
-#     preset_mode_value_template: '{{ value | replace("3,0", "turtle") | replace("3,1", "low") | replace("3,2", "medium") | replace("3,3", "high") }}'
-#     preset_mode_command_topic: "cmnd/tasmota_mb_fan/tuyasend4"
-#     preset_mode_command_template: '{{ value | replace("turtle", "3,0") | replace("low", "3,1") | replace("medium", "3,2") | replace("high", "3,3") }}'
-#     preset_modes:
-#       - "turtle"
-#       - "low"
-#       - "medium"
-#       - "high"
-#     payload_available: "Online"
-#     payload_not_available: "Offline"
-#     payload_on: "ON"
-#     payload_off: "OFF"
-
-# light:
-#   - platform: mqtt
-#     name: "Mater Bedroom Light"
-#     state_topic: "tele/tasmota_mb_fan/STATE"
-#     value_template: "{{ value_json.POWER2 }}"
-#     command_topic: "cmnd/tasmota_mb_fan/POWER2"
-#     availability_topic: "tele/tasmota_mb_fan/LWT"
-#     brightness_state_topic: "tele/tasmota_mb_fan/STATE"
-#     brightness_command_topic: "cmnd/tasmota_mb_fan/Dimmer"
-#     brightness_scale: 100
-#     brightness_value_template: "{{ value_json.Dimmer }}"
-#     payload_on: "ON"
-#     payload_off: "OFF"
-#     payload_available: "Online"
-#     payload_not_available: "Offline"
-
 shelly:
 
 # synology_dsm:

@@ -222,11 +222,11 @@
 #########################################################################
 - id: thermostat_afternoon_run_fan
   alias: Thermostat - run fan in afternoon
-  description: Run the fan for 15 minutes at 3:45 PM
+  description: Run the fan for 10 minutes at 3:45 PM
   trigger:
   - platform: time
     at: '15:45:00'
-  condition: "{{ sensor.hallway_temperature >= 75 }} AND {{ sensor.sensor.shelly_h_t_ac7dca_temperature < 75 }}" # basement shelly
+  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs <= 5 }}" # basement shelly
   action:
   - service: climate.set_fan_mode
     data:
@@ -243,25 +243,28 @@
       hvac_mode: heat_cool
 - id: thermostat_afternoon_run_fan_2
   alias: Thermostat - run fan in late afternoon
-  description: Run the fan for 15 minutes at 4:30 PM
+  description: Run the fan for 10 minutes at 4:30 PM
   trigger:
   - platform: time
     at: '16:30:00'
-  condition: "{{ sensor.hallway_temperature >= 75 }} AND {{ sensor.sensor.shelly_h_t_ac7dca_temperature < 75 }}" # basement shelly
+  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly
   action:
-  - service: climate.set_fan_mode
-    data:
-      entity_id: climate.hallway
-      fan_mode: 'on'
-  - delay: 00:10:00
-  - service: climate.set_fan_mode
-    data:
-      entity_id: climate.hallway
-      fan_mode: 'off'
-  - service: climate.set_hvac_mode
-    data:
-      entity_id: climate.hallway
-      hvac_mode: heat_cool
+    - service: homeassistant.turn_on
+      entity_id: switch.desk_power
+    - service: climate.set_fan_mode
+      data:
+        entity_id: climate.hallway
+        fan_mode: 'on'
+    - delay: 00:10:00
+    - service: climate.set_fan_mode
+      data:
+        entity_id: climate.hallway
+        fan_mode: 'off'
+    - service: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: heat_cool
+  mode: single
 - id: thermostat_night_temperature
   alias: Thermostat - set nighttime temperature range
   description: Set the thermostat the nighttime temperature range
@@ -327,3 +330,19 @@
       fw_ver: '{{ trigger.payload_json.fw_ver }}'
       model: '{{ trigger.payload_json.model }}'
       mode: '{{ trigger.payload_json.mode | default }}'
+
+
+# - id: aaa_test_automation
+#   alias: aaa_test_automation
+#   description: aaa_test_automation
+#   trigger:
+#   - platform: state
+#     entity_id: switch.bonus_room_enterance_light
+#     to: 'on'
+#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs <= 5 }}"
+#   # "{{ states('sensor.shelly_h_t_ac7dca_temperature') | float < 100 }}" #<-  works
+#   # "{{ states('sensor.hallway_temperature') | float < 100 }}" #<-  works
+#   action:
+#     - service: homeassistant.turn_on
+#       entity_id: switch.desk_power
+#   mode: single
