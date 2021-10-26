@@ -9,3 +9,9 @@
   longitude: !secret home_area_longitude
   radius: 1569.1240406853476
   icon: mdi:account-multiple
+
+- name: Traci Work
+  latitude:  !secret traci_work_latitude
+  longitude: !secret traci_work_longitude
+  radius: 265.01048816420985
+  icon: mdi:account-multiple

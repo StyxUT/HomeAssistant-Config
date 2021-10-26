@@ -1,7 +1,7 @@
 homeassistant:
   name: Home
   elevation: 1302
-  time_zone: America/Denver
+  time_zone: "America/Denver"
   unit_system: imperial
   latitude: !secret home_latitude
   longitude: !secret home_longitude
@@ -48,26 +48,26 @@ mqtt:
   client_id: home-assistant
   discovery: true
   discovery_prefix: homeassistant
-  username: !secret mqtt-user
-  password: !secret mqtt-password
+  # username: !secret mqtt-user
+  # password: !secret mqtt-password
 
 # Text to speech
 tts:
   - platform: google_translate
 
-homekit:
-  - name: HASS Bridge 1
-    filter:
-      include_domains:
-        - light
-        - switch
-        - automation
-        - script
-        - fan
-      exclude_entity_globs:
-        - switch.*schedule
-        - sensor.*
-        - switch.zone*
+# homekit:
+#   - name: HASS Bridge 1
+#     filter:
+#       include_domains:
+#         - light
+#         - switch
+#         - automation
+#         - script
+#         - fan
+#       exclude_entity_globs:
+#         - switch.*schedule
+#         - sensor.*
+#         - switch.zone*
 
 neato:
   client_id: !secret neato_client_id
@@ -115,8 +115,8 @@ wemo:
     - !secret master_bedroom_lamp
     - !secret salt_lamp
     # smaller plugs
-    #- !secret plant_light
-    #- !secret lawn_mower_north
+    - !secret plant_light_01
+    - !secret plant_light_02
     - !secret desk_power
 
 #group: !include groups.yaml

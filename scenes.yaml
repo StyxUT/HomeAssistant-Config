@@ -1,9 +1,13 @@
 - id: sce-GoodNight
   name: Good Night
   entities:
+    switch.plant_light_01:
+      state: 'off'
     switch.desk_power:
       state: 'off'
     switch.master_bedroom_lamp:
+      state: 'off'
+    switch.master_bedroom_light:
       state: 'off'
     switch.deck_light:
       state: 'off'
@@ -21,7 +25,6 @@
       state: 'off'
     switch.plant_light:
       state: 'off'
-    
   icon: hass:bed
 - id: sce-vr-on
   name: VR On

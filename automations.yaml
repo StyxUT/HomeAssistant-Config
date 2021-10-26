@@ -8,7 +8,7 @@
   - platform: numeric_state
     entity_id: sun.sun
     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-    below: 3.5
+    below: 4
   action:
     service: homeassistant.turn_on
     entity_id: switch.bonus_room_enterance_light
@@ -31,31 +31,35 @@
   - platform: numeric_state
     entity_id: sun.sun
     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-    below: 3.5
+    below: 4
   action:
     service: homeassistant.turn_on
     entity_id: switch.kitchen_light
 - id: plant_light_morning_on
   alias: Plant Light - Morning On
-  description: Turn on Plant Light after sunrise
+  description: Turn on Plant Light before sunrise
   trigger:
     platform: sun
     event: sunrise
-    offset: 00:30:00
+    offset: -00:30:00
   action:
-    service: homeassistant.turn_on
-    entity_id: switch.plant_light
+    - service: homeassistant.turn_on
+      entity_id: switch.plant_light_02
+    - service: homeassistant.turn_on
+      entity_id: switch.plant_light_01
 - id: plant_light_evening_off
   alias: plant Light - Evening Off
-  description: Turn off Plant Light before sunset
+  description: Turn off Plant Light at sunset
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
     below: -6.0
   action:
-    service: homeassistant.turn_off
-    entity_id: switch.plant_light
+    - service: homeassistant.turn_off
+      entity_id: switch.plant_light_01
+    - service: homeassistant.turn_off
+      entity_id: switch.plant_light_02
 - id: salt_lamp_night_off
   alias: Salt Lamp - Night Off
   description: Turn off Salt Lamp at night
@@ -107,6 +111,7 @@
   - delay: 02:00:00
   - service: homeassistant.turn_off
     entity_id: switch.garage_door
+
 - id: ariving_home_turn_on_external_lights
   alias: Ariving home, turn on external lights
   description: Someone is ariving home, turn on the external lights for 10 minutes.
@@ -161,6 +166,52 @@
           {{ trigger.to_state.attributes.friendly_name }} is arriving home.
   mode: single
 
+- id: notify_traci_ariving_at_work
+  alias: Notify when Traci arrives at work
+  description: Send notification when Traci arrives at work
+  trigger:
+    - platform: zone
+      entity_id:
+         - person.traci
+      zone: zone.traci_work
+      event: enter
+  condition:
+    - condition: time
+      after: '06:00:00'
+      before: '11:30:00'
+  action:
+    - service: >
+          notify.styx_devices
+      data:
+        title: >
+          {{ trigger.to_state.attributes.friendly_name }} has arrived at Work
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} has arrived at Work.
+  mode: single
+
+- id: notify_traci_leaves_work
+  alias: Notify when Traci leaves work for the day
+  description: Send notification when Traci leaves work for the day
+  trigger:
+    - platform: zone
+      entity_id:
+         - person.traci
+      zone: zone.traci_work
+      event: enter
+  condition:
+    - condition: time
+      after: '14:00:00'
+      before: '22:00:00'
+  action:
+    - service: >
+          notify.styx_devices
+      data:
+        title: >
+          {{ trigger.to_state.attributes.friendly_name }} has left work
+        message: >
+          {{ trigger.to_state.attributes.friendly_name }} has left work.
+  mode: single
+
 #########################################################################
 ###  Night Motion Detection
 #########################################################################
@@ -198,7 +249,7 @@
 #   alias: Tasmotas Announce
 #   description: 'Prevents devices from going Unavailable'
 #   trigger:
-#     - platform: Home Assistant
+#     - platform: home Assistant
 #       event: start
 #     - platform: time_pattern
 #       hours: /1
@@ -207,14 +258,14 @@
 #     # For reasons that I don't understand, different tasmota devices seem to 
 #     #     subscribe to a different group topic. cmnd/tas vs tas/cmnd
 #     ##
-#     - service: mqtt.publish
-#       data:
-#         topic: cmnd/tasmotas/SetOption19
-#         payload: '0'
-#     - service: mqtt.publish
-#       data:
-#         topic: tasmotas/cmnd/SetOption19
-#         payload: '0'
+#   - service: mqtt.publish
+#     data:
+#       topic: cmnd/tasmotas/SetOption19
+#       payload: '0'
+#   - service: mqtt.publish
+#     data:
+#       topic: tasmotas/cmnd/SetOption19
+#       payload: '0'
 #   mode: single
 
 #########################################################################
@@ -226,7 +277,7 @@
   trigger:
   - platform: time
     at: '15:45:00'
-  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs <= 5 }}" # basement shelly
+  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement Shelly H&T 
   action:
   - service: climate.set_fan_mode
     data:
@@ -247,7 +298,7 @@
   trigger:
   - platform: time
     at: '16:30:00'
-  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly
+  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly H&T
   action:
     - service: homeassistant.turn_on
       entity_id: switch.desk_power
@@ -308,7 +359,7 @@
     - platform: homeassistant
       event: start
     - platform: time_pattern
-      hours: "/1"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
+      minutes: "/30"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
   action:
     service: mqtt.publish
     data:

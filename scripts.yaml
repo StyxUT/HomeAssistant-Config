@@ -4,6 +4,45 @@ lets_go_to_bed:
   sequence:
   - service: homeassistant.turn_off
     entity_id: switch.desk_power
+  - service: script.turn_on # non-blocking vs. calling script directly by name
+    entity_id: script.bed_time_fan_sequence
+  - service: script.turn_on  # non-blocking vs. calling script directly by name
+    entity_id: script.bed_time_light_sequence
+  mode: restart
+  icon: hass:weather-night
+
+# light_test_script:
+#   alias: light_test_script
+#   sequence:
+#   - service: light.turn_on
+#     entity_id: light.master_bedroom_light
+#     data:
+#       brightness: 100
+#   - service: homeassistant.turn_on
+#     entity_id: fan.master_bedroom_fan
+#     data:
+#       percentage: 25
+#   - delay:
+#       seconds: 15
+#   - service: light.turn_off
+#     entity_id: light.master_bedroom_light
+#   - delay:
+#       seconds: 5
+#   - service: fan.turn_off
+#     entity_id: fan.master_bedroom_fan
+
+# off_test_script:
+#   alias: off_test_script
+#   sequence:
+#   - service: homeassistant.turn_off
+#     entity_id: light.master_bedroom_light
+#   - service: fan.turn_off
+#     entity_id: fan.master_bedroom_fan
+
+bed_time_light_sequence:
+  alias: "Bed time light sequence"
+  description: Lighting sequence when heading to bed
+  sequence:
   - service: homeassistant.turn_on
     entity_id: switch.bonus_room_enterance_light
   - delay:
@@ -38,12 +77,6 @@ lets_go_to_bed:
     entity_id: switch.kitchen_light
   - delay:
       minutes: 2
-  - service: homeassistant.turn_on
-    entity_id: fan.master_bedroom_fan
-    data:
-      percentage: 25
-  - delay:
-      seconds: 10
   - service: light.turn_on
     entity_id: light.master_bedroom_light
     data:
@@ -62,38 +95,25 @@ lets_go_to_bed:
       minutes: 1
   - service: light.turn_off
     entity_id: light.master_bedroom_light
-  - delay:
-      minutes: 30
-  - service: fan.turn_off
-    entity_id: fan.master_bedroom_fan
   mode: restart
   icon: hass:weather-night
 
-# light_test_script:
-#   alias: light_test_script
-#   sequence:
-#   - service: light.turn_on
-#     entity_id: light.master_bedroom_light
-#     data:
-#       brightness: 100
-#   - service: homeassistant.turn_on
-#     entity_id: fan.master_bedroom_fan
-#     data:
-#       percentage: 25
-#   - delay:
-#       seconds: 15
-#   - service: light.turn_off
-#     entity_id: light.master_bedroom_light
-#   - delay:
-#       seconds: 5
-#   - service: fan.turn_off
-#     entity_id: fan.master_bedroom_fan
-
-# off_test_script:
-#   alias: off_test_script
-#   sequence:
-#   - service: homeassistant.turn_off
-#     entity_id: light.master_bedroom_light
-#   - service: fan.turn_off
-#     entity_id: fan.master_bedroom_fan
-
+bed_time_fan_sequence:
+  alias: "Bed time fan sequence"
+  description: Fan sequence when heading to bed
+  sequence:
+    - delay:
+        minutes: 3
+    - condition: numeric_state
+      entity_id: sensor.hallway_temperature
+      above: 70
+    - service: fan.turn_on
+      entity_id: fan.master_bedroom_fan
+      data:
+        percentage: 25
+    - delay:
+        minutes: 30
+    - service: fan.turn_off
+      entity_id: fan.master_bedroom_fan
+  mode: restart
+  icon: hass:weather-night
