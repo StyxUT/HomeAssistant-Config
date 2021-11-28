@@ -11,6 +11,21 @@ lets_go_to_bed:
   mode: restart
   icon: hass:weather-night
 
+time_to_go_to_work:
+  alias: "Time to go to work"
+  description: Time to go to work
+  sequence:
+  - service: light.turn_on
+    entity_id: light.master_bedroom_light
+    data:
+      brightness: 50
+  - delay:
+      minutes: 5
+  - service: homeassistant.turn_on
+    entity_id: switch.desk_power
+  mode: restart
+  icon: hass:weather-night
+
 # light_test_script:
 #   alias: light_test_script
 #   sequence:
@@ -95,6 +110,12 @@ bed_time_light_sequence:
       minutes: 1
   - service: light.turn_off
     entity_id: light.master_bedroom_light
+  - delay: # -- disable after the holidays ###############################################
+      seconds: 30
+  - service: homeassistant.turn_off
+    entity_id: switch.plant_light_01
+  - service: homeassistant.turn_off
+    entity_id: switch.dual_outlet_two # -- end disable  ##################################
   mode: restart
   icon: hass:weather-night
 
@@ -117,3 +138,4 @@ bed_time_fan_sequence:
       entity_id: fan.master_bedroom_fan
   mode: restart
   icon: hass:weather-night
+

@@ -20,8 +20,10 @@ sun:
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
   use_x_forwarded_for: true
-  trusted_proxies:    
+  trusted_proxies:
+    - 10.0.0.0/8
     - 192.168.0.0/24
+    - 192.168.107.0/24
     - 127.0.0.1
   ip_ban_enabled: true
   login_attempts_threshold: 10
@@ -94,19 +96,21 @@ shelly:
 #   ssl: true
 #   port: 5001
 
-tplink:
-  discovery: true
-  switch:
-    - host: !secret vr_main
-    - host: !secret vr_sensor_1
-    - host: !secret vr_sensor_2
-    - host: !secret external_lights
-    - host: !secret bonus_room_entrance_light
-    - host: !secret deck_light
-    #- host: !secret external_dual_outlet
+# tplink:
+#   discovery: true
+#   switch:
+#     - host: !secret vr_main
+#     - host: !secret vr_sensor_1
+#     - host: !secret vr_sensor_2
+#     - host: !secret front_eaves
+#     - host: !secret back_eaves
+#     - host: !secret external_lights
+#     - host: !secret bonus_room_entrance_light
+#     - host: !secret deck_light
+#     - host: !secret external_dual_outlet
 
 wemo:
-  discovery: true
+  discovery: false
   static:
     # lights
     - !secret kitchen_light

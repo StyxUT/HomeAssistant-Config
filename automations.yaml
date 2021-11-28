@@ -35,31 +35,6 @@
   action:
     service: homeassistant.turn_on
     entity_id: switch.kitchen_light
-- id: plant_light_morning_on
-  alias: Plant Light - Morning On
-  description: Turn on Plant Light before sunrise
-  trigger:
-    platform: sun
-    event: sunrise
-    offset: -00:30:00
-  action:
-    - service: homeassistant.turn_on
-      entity_id: switch.plant_light_02
-    - service: homeassistant.turn_on
-      entity_id: switch.plant_light_01
-- id: plant_light_evening_off
-  alias: plant Light - Evening Off
-  description: Turn off Plant Light at sunset
-  trigger:
-  - platform: numeric_state
-    entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-    below: -6.0
-  action:
-    - service: homeassistant.turn_off
-      entity_id: switch.plant_light_01
-    - service: homeassistant.turn_off
-      entity_id: switch.plant_light_02
 - id: salt_lamp_night_off
   alias: Salt Lamp - Night Off
   description: Turn off Salt Lamp at night
@@ -78,26 +53,110 @@
   action:
     service: homeassistant.turn_off
     entity_id: switch.kitchen_light
-- id: external_lights_dark_on
-  alias: External Lights - Evening On
-  description: Turn on External Lights at dark
+
+##########################################################    
+# enable after holiday season
+##########################################################
+# - id: external_lights_dark_on
+#   alias: External Lights - Evening On
+#   description: Turn on External Lights at dark
+#   trigger:
+#   - platform: numeric_state
+#     entity_id: sun.sun
+#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+#     below: -4.0
+#   action:
+#     service: homeassistant.turn_on
+#     entity_id: switch.external_lights
+# - id: external_lights_night_off
+#   alias: Externals Light - Night Off
+#   description: Turn off External Lights at midnight
+#   trigger:
+#     platform: time
+#     at: '23:59:00'
+#   action:
+#     service: homeassistant.turn_off
+#     entity_id: switch.external_lights
+# - id: plant_light_morning_on
+#   alias: Plant Light - Morning On
+#   description: Turn on Plant Light before sunrise
+#   trigger:
+#     platform: sun
+#     event: sunrise
+#     offset: -00:30:00
+#   action:
+#     - service: homeassistant.turn_on
+#       entity_id: switch.plant_light_02
+#     - service: homeassistant.turn_on
+#       entity_id: switch.plant_light_01
+# - id: plant_light_evening_off
+#   alias: plant Light - Evening Off
+#   description: Turn off Plant Light at sunset
+#   trigger:
+#   - platform: numeric_state
+#     entity_id: sun.sun
+#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+#     below: -6.0
+#   action:
+#     - service: homeassistant.turn_off
+#       entity_id: switch.plant_light_01
+#     - service: homeassistant.turn_off
+#       entity_id: switch.plant_light_02
+########################################################## -- end enable
+
+##########################################################    
+# disable after holiday season
+##########################################################
+- id: holiday_lights_dark_on
+  alias: Holiday Lights - Evening On
+  description: Turn on Holiday Lights at dark
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
     below: -4.0
   action:
-    service: homeassistant.turn_on
-    entity_id: switch.external_lights
-- id: external_lights_night_off
-  alias: External Light - Night Off
-  description: Turn off External Lights at midnight
+    - service: homeassistant.turn_on
+      entity_id: switch.front_eaves
+    - service: homeassistant.turn_on
+      entity_id: switch.plant_light_01 # outisde x-mas light
+- id: holiday_lights_night_off
+  alias: Holiday Lights - Night Off
+  description: Turn off Holiday Lights at midnight
   trigger:
     platform: time
-    at: '23:59:00'
+    at: '02:00:00'
   action:
     service: homeassistant.turn_off
-    entity_id: switch.external_lights
+    entity_id: switch.front_eaves
+- id: plant_light_morning_on
+  alias: Plant Light - Morning On
+  description: Turn on Plant Light before sunrise
+  trigger:
+    platform: sun
+    event: sunrise
+    offset: -00:30:00
+  action:
+    - service: homeassistant.turn_on
+      entity_id: switch.plant_light_02
+    - service: homeassistant.turn_on
+      entity_id: switch.dual_outlet_one # plant light
+    - service: homeassistant.turn_on
+      entity_id: switch.dual_outlet_two # inside x-mas lights
+- id: plant_light_evening_off
+  alias: plant Light - Evening Off
+  description: Turn off Plant Light at sunset
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+    below: -6.0
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.plant_light_02
+    - service: homeassistant.turn_off
+      entity_id: switch.dual_outlet_one # plant light
+########################################################## -- end disable
 - id: garage_door_delayed_off
   alias: Back Garage Door - Delayed Off
   description: Turn off Garage Door after two hours
@@ -327,7 +386,7 @@
     data:
       entity_id: climate.hallway
       target_temp_high: 77
-      target_temp_low: 55
+      target_temp_low: 65
   - service: climate.set_hvac_mode
     data:
       entity_id: climate.hallway
@@ -344,7 +403,7 @@
     data:
       entity_id: climate.hallway
       target_temp_high: 77
-      target_temp_low: 64
+      target_temp_low: 68
   - service: climate.set_hvac_mode
     data:
       entity_id: climate.hallway
