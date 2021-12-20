@@ -53,6 +53,18 @@
   action:
     service: homeassistant.turn_off
     entity_id: switch.kitchen_light
+- id: day_masterbedroom_light_brightness
+  alias: Master Bedroom Light - set daytime brightness to 100
+  description: Set Master Bedroom light daytime brightness to 100
+  trigger:
+    platform: time
+    at: '12:00:00'
+  action:
+  - service: homeassistant.turn_off
+    data: { brightness: 100 }
+    target:
+      entity_id:
+        - light.master_bedroom_light
 
 ##########################################################    
 # enable after holiday season
@@ -90,7 +102,7 @@
 #     - service: homeassistant.turn_on
 #       entity_id: switch.plant_light_01
 # - id: plant_light_evening_off
-#   alias: plant Light - Evening Off
+#   alias: Plant Light - Evening Off
 #   description: Turn off Plant Light at sunset
 #   trigger:
 #   - platform: numeric_state
@@ -119,7 +131,7 @@
     - service: homeassistant.turn_on
       entity_id: switch.front_eaves
     - service: homeassistant.turn_on
-      entity_id: switch.plant_light_01 # outisde x-mas light
+      entity_id: switch.plant_light_01 # outside x-mas light
 - id: holiday_lights_night_off
   alias: Holiday Lights - Night Off
   description: Turn off Holiday Lights at midnight
@@ -144,7 +156,7 @@
     - service: homeassistant.turn_on
       entity_id: switch.dual_outlet_two # inside x-mas lights
 - id: plant_light_evening_off
-  alias: plant Light - Evening Off
+  alias: Plant Light - Evening Off
   description: Turn off Plant Light at sunset
   trigger:
   - platform: numeric_state
@@ -173,7 +185,7 @@
 
 - id: ariving_home_turn_on_external_lights
   alias: Ariving home, turn on external lights
-  description: Someone is ariving home, turn on the external lights for 10 minutes.
+  description: Someone is ariving home, turn on the external lights for 6 minutes.
   trigger:
     platform: state
     entity_id: 
@@ -190,9 +202,10 @@
     entity_id: switch.external_lights
     state: 'off'
   action:
+  - delay: 00:01:00
   - service: homeassistant.turn_on
     entity_id: switch.external_lights
-  - delay: 00:10:00
+  - delay: 00:06:00
   - service: homeassistant.turn_off
     entity_id: switch.external_lights
 
@@ -277,22 +290,15 @@
 - id: backyard_motion_detected
   alias: Backyard motion detected, turn on deck light
   trigger:
-  # - platform: event
-  #   event_type: nest_event
-  #   event_data:
-  #     device_id: camera.backyard
-  #     type: camera_motion
-    - platform: device
-      device_id: 28319699b614915a42f1c29b1c6305fd
-      domain: nest
-      type: camera_motion # available options are: camera_person, camera_sound, camera_motion
+    type: motion
+    platform: device
+    device_id: cf9665957192c22e906246f838576b83
+    entity_id: binary_sensor.backyard_4
+    domain: binary_sensor
   condition:
   - condition: state
     entity_id: sun.sun
     state: below_horizon
-  # - condition: state
-  #   entity_id: switch.deck_light
-  #   state: 'off'
   action:
   - service: homeassistant.turn_on
     entity_id: switch.deck_light
@@ -300,32 +306,6 @@
   - service: homeassistant.turn_off
     entity_id: switch.deck_light
   mode: restart
-
-#########################################################################
-###  Tasmotas
-#########################################################################
-# - id: tasmotas_announce
-#   alias: Tasmotas Announce
-#   description: 'Prevents devices from going Unavailable'
-#   trigger:
-#     - platform: home Assistant
-#       event: start
-#     - platform: time_pattern
-#       hours: /1
-#   condition: []
-#   action:
-#     # For reasons that I don't understand, different tasmota devices seem to 
-#     #     subscribe to a different group topic. cmnd/tas vs tas/cmnd
-#     ##
-#   - service: mqtt.publish
-#     data:
-#       topic: cmnd/tasmotas/SetOption19
-#       payload: '0'
-#   - service: mqtt.publish
-#     data:
-#       topic: tasmotas/cmnd/SetOption19
-#       payload: '0'
-#   mode: single
 
 #########################################################################
 ###  Temperature Control
@@ -338,19 +318,28 @@
     at: '15:45:00'
   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement Shelly H&T 
   action:
-  - service: climate.set_fan_mode
-    data:
-      entity_id: climate.hallway
-      fan_mode: 'on'
-  - delay: 00:10:00
-  - service: climate.set_fan_mode
-    data:
-      entity_id: climate.hallway
-      fan_mode: 'off'
-  - service: climate.set_hvac_mode
-    data:
-      entity_id: climate.hallway
-      hvac_mode: heat_cool
+    - service: climate.set_hvac_mode
+      target:
+        entity_id: climate.hallway_thermostat
+      data:
+        hvac_mode: 'off'
+    - service: climate.set_fan_mode
+      target:
+        entity_id: climate.hallway_thermostat
+      data:
+        fan_mode: 'on'
+    - delay: 00:10:00
+    - service: climate.set_fan_mode
+      target:
+        entity_id: climate.hallway_thermostat
+      data:
+        fan_mode: 'on'
+    - service: climate.set_hvac_mode
+      target:
+        entity_id: climate.hallway_thermostat
+      data:
+        hvac_mode: heat_cool
+  mode: single
 - id: thermostat_afternoon_run_fan_2
   alias: Thermostat - run fan in late afternoon
   description: Run the fan for 10 minutes at 4:30 PM
@@ -359,56 +348,59 @@
     at: '16:30:00'
   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly H&T
   action:
-    - service: homeassistant.turn_on
-      entity_id: switch.desk_power
-    - service: climate.set_fan_mode
+    - service: climate.set_hvac_mode
+      target:
+        entity_id: climate.hallway_thermostat
       data:
-        entity_id: climate.hallway
+        hvac_mode: 'off'
+    - service: climate.set_fan_mode
+      target:
+        entity_id: climate.hallway_thermostat
+      data:
         fan_mode: 'on'
     - delay: 00:10:00
     - service: climate.set_fan_mode
+      target:
+        entity_id: climate.hallway_thermostat
       data:
-        entity_id: climate.hallway
-        fan_mode: 'off'
+        fan_mode: 'on'
     - service: climate.set_hvac_mode
+      target:
+        entity_id: climate.hallway_thermostat
       data:
-        entity_id: climate.hallway
         hvac_mode: heat_cool
   mode: single
+
 - id: thermostat_night_temperature
   alias: Thermostat - set nighttime temperature range
   description: Set the thermostat the nighttime temperature range
   trigger:
   - platform: time
-    at: 00:05:00
+    at: "00:01:00"
   action:
-  - service: climate.set_temperature
-    data:
-      entity_id: climate.hallway
-      target_temp_high: 77
-      target_temp_low: 65
-  - service: climate.set_hvac_mode
-    data:
-      entity_id: climate.hallway
-      hvac_mode: heat_cool
+    - service: climate.set_temperature
+      data:
+        target_temp_high: 76
+        target_temp_low: 59
+        hvac_mode: heat_cool
+      target:
+        entity_id: climate.hallway_thermostat
   mode: single
 - id: thermostat_day_temperature
   alias: Thermostat - set daytime temperature range
   description: Set the thermostat the daytime temperature range
   trigger:
   - platform: time
-    at: 07:30:00
+    at: "00:05:30"
   action:
-  - service: climate.set_temperature
-    data:
-      entity_id: climate.hallway
-      target_temp_high: 77
-      target_temp_low: 68
-  - service: climate.set_hvac_mode
-    data:
-      entity_id: climate.hallway
-      hvac_mode: heat_cool
-
+    - service: climate.set_temperature
+      data:
+        target_temp_high: 76
+        target_temp_low: 66
+        hvac_mode: heat_cool
+      target:
+        entity_id: climate.hallway_thermostat
+  mode: single
 #########################################################################
 ###  Shelly
 #########################################################################
@@ -440,7 +432,6 @@
       fw_ver: '{{ trigger.payload_json.fw_ver }}'
       model: '{{ trigger.payload_json.model }}'
       mode: '{{ trigger.payload_json.mode | default }}'
-
 
 # - id: aaa_test_automation
 #   alias: aaa_test_automation

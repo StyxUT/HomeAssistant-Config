@@ -140,6 +140,15 @@ ios:
     icon:
       icon: hass:weather-night
       color: "#951ad3"
+  actions:
+  - name: "Let's Go To Work"
+    background_color: "color: "#33adff"
+    label:
+      text: "Let's Go To Bed."
+      color: "#33adff"
+    icon:
+      icon: hass:weather-night
+      color: "#33adff"
 # # actions:
 #   - name: "Turn On VR"
 #     background_color: "#000000"
