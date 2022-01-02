@@ -233,32 +233,24 @@
         {% endif %}
       data:
         title: >
-          {{ trigger.to_state.attributes.friendly_name }} is Arriving Home
+          "{{ trigger.to_state.attributes.friendly_name }} is Arriving Home"
         message: >
-          {{ trigger.to_state.attributes.friendly_name }} is arriving home.
+          "{{ trigger.to_state.attributes.friendly_name }} is arriving home."
   mode: single
 
-- id: notify_traci_ariving_at_work
-  alias: Notify when Traci arrives at work
-  description: Send notification when Traci arrives at work
+- id: notify_on_UPS_status_change
+  alias: Notify that UPS status has changed
+  description: Notify when the UPS status has changed
   trigger:
-    - platform: zone
-      entity_id:
-         - person.traci
-      zone: zone.traci_work
-      event: enter
-  condition:
-    - condition: time
-      after: '06:00:00'
-      before: '11:30:00'
+  - platform: state
+    entity_id: sensor.ups_status
   action:
-    - service: >
-          notify.styx_devices
-      data:
-        title: >
-          {{ trigger.to_state.attributes.friendly_name }} has arrived at Work
-        message: >
-          {{ trigger.to_state.attributes.friendly_name }} has arrived at Work.
+  - service: notify.home_resident_devices
+    data:
+      title: 'UPS Status Changed'
+      message: >
+        "UPS status has changed from '{{ trigger.from_state.state }}' to '{{ trigger.to_state.state }}'.
+        Verify that the server is fully powered on."
   mode: single
 
 - id: notify_traci_leaves_work
@@ -267,21 +259,21 @@
   trigger:
     - platform: zone
       entity_id:
-         - person.traci
+      - person.traci
       zone: zone.traci_work
       event: enter
   condition:
-    - condition: time
-      after: '14:00:00'
-      before: '22:00:00'
+  - condition: time
+    after: '14:00:00'
+    before: '22:00:00'
   action:
-    - service: >
-          notify.styx_devices
-      data:
-        title: >
-          {{ trigger.to_state.attributes.friendly_name }} has left work
-        message: >
-          {{ trigger.to_state.attributes.friendly_name }} has left work.
+  - service: >
+      notify.styx_devices
+    data:
+      title: >
+        "{{ trigger.to_state.attributes.friendly_name }} has left work"
+      message: >
+        "{{ trigger.to_state.attributes.friendly_name }} has left work."
   mode: single
 
 #########################################################################
@@ -305,7 +297,8 @@
   - delay: 00:03:00
   - service: homeassistant.turn_off
     entity_id: switch.deck_light
-  mode: restart
+  - delay: 00:01:00
+  mode: single
 
 #########################################################################
 ###  Temperature Control
@@ -396,7 +389,7 @@
     - service: climate.set_temperature
       data:
         target_temp_high: 76
-        target_temp_low: 66
+        target_temp_low: 65
         hvac_mode: heat_cool
       target:
         entity_id: climate.hallway_thermostat

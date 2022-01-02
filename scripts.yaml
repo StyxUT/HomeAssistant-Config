@@ -10,7 +10,6 @@ lets_go_to_bed:
     entity_id: script.bed_time_light_sequence
   mode: restart
   icon: hass:weather-night
-
 lets_go_to_work:
   alias: Lets Go To Work
   description: Settings for work
@@ -18,22 +17,21 @@ lets_go_to_work:
   - service: homeassistant.turn_on
     entity_id: light.master_bedroom_light
     data:
-      { brightness: 75 }
+      brightness: 75
   - service: homeassistant.turn_on
-    entity_id: 
-      - switch.desk_power
-      - switch.kitchen_light
-      - switch.bonus_room_enterance_light
+    entity_id:
+    - switch.desk_power
+    - switch.kitchen_light
+    - switch.bonus_room_enterance_light
   - delay:
       minutes: 15
   - service: homeassistant.turn_off
-    entity_id: 
-      - light.master_bedroom_light
-      - switch.kitchen_light
-      - switch.bonus_room_enterance_light
+    entity_id:
+    - light.master_bedroom_light
+    - switch.kitchen_light
+    - switch.bonus_room_enterance_light
   mode: restart
   icon: mdi:briefcase-clock
-
 bed_time_light_sequence:
   alias: Bed time light sequence
   description: Lighting sequence when heading to bed
@@ -57,7 +55,7 @@ bed_time_light_sequence:
   - service: homeassistant.turn_on
     entity_id: light.master_bedroom_light
     data:
-      { brightness: 75 }
+      brightness: 75
   - delay:
       seconds: 30
   - service: homeassistant.turn_off
@@ -93,20 +91,19 @@ bed_time_light_sequence:
   - delay:
       minutes: 1
   - service: homeassistant.turn_off
-    data: { brightness: 50 }
+    data: {}
     target:
       entity_id:
       - light.master_bedroom_light
   - delay:
       seconds: 30
   - service: homeassistant.turn_off
-    target: 
-      entity_id: 
-        - switch.plant_light_01
-        - switch.dual_outlet_two
+    target:
+      entity_id:
+      - switch.plant_light_01
+      - switch.dual_outlet_two
   mode: restart
   icon: hass:weather-night
-
 bed_time_fan_sequence:
   alias: Bed time fan sequence
   description: Fan sequence when heading to bed
@@ -119,7 +116,7 @@ bed_time_fan_sequence:
   - service: fan.turn_on
     entity_id: fan.master_bedroom_fan
     data:
-      { percentage: 25 }
+      percentage: 25
   - delay:
       minutes: 30
   - service: fan.turn_off
