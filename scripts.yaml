@@ -4,12 +4,17 @@ lets_go_to_bed:
   sequence:
   - service: homeassistant.turn_off
     entity_id: switch.desk_power
+  - service: homeassistant.turn_off
+    entity_id: switch.standing_desk_power
+  - service: homeassistant.turn_off
+    entity_id: switch.monitor_power
   - service: script.turn_on
     entity_id: script.bed_time_fan_sequence
   - service: script.turn_on
     entity_id: script.bed_time_light_sequence
   mode: restart
   icon: hass:weather-night
+
 lets_go_to_work:
   alias: Lets Go To Work
   description: Settings for work
@@ -20,11 +25,12 @@ lets_go_to_work:
       brightness: 75
   - service: homeassistant.turn_on
     entity_id:
+    - switch.standing_desk_power
     - switch.desk_power
     - switch.kitchen_light
     - switch.bonus_room_enterance_light
-  - delay:
-      minutes: 15
+  # - delay:
+  #   minutes: 15
   - service: homeassistant.turn_off
     entity_id:
     - light.master_bedroom_light
@@ -32,6 +38,7 @@ lets_go_to_work:
     - switch.bonus_room_enterance_light
   mode: restart
   icon: mdi:briefcase-clock
+
 bed_time_light_sequence:
   alias: Bed time light sequence
   description: Lighting sequence when heading to bed
@@ -104,22 +111,27 @@ bed_time_light_sequence:
       - switch.dual_outlet_two
   mode: restart
   icon: hass:weather-night
+
 bed_time_fan_sequence:
   alias: Bed time fan sequence
   description: Fan sequence when heading to bed
   sequence:
-  - delay:
-      minutes: 3
   - condition: numeric_state
-    entity_id: sensor.hallway_temperature
-    above: 70
-  - service: fan.turn_on
-    entity_id: fan.master_bedroom_fan
-    data:
-      percentage: 25
+    entity_id: sensor.hallway_thermostat_current_temperature
+    above: 68
   - delay:
-      minutes: 30
-  - service: fan.turn_off
-    entity_id: fan.master_bedroom_fan
+      minutes: 5
+  - service: homeassistant.turn_on
+    entity_id: switch.master_bedroom_fan
+  - repeat:
+      while:
+        - condition: numeric_state
+          entity_id: sensor.hallway_thermostat_current_temperature
+          above: 70
+      sequence:
+        - delay:
+            minutes: 15
+  - service: homeassistant.turn_off
+    entity_id: switch.master_bedroom_fan
   mode: restart
   icon: hass:weather-night

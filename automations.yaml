@@ -54,93 +54,51 @@
     service: homeassistant.turn_off
     entity_id: switch.kitchen_light
 - id: day_masterbedroom_light_brightness
-  alias: Master Bedroom Light - set daytime brightness to 100
-  description: Set Master Bedroom light daytime brightness to 100
+  alias: Master Bedroom Light - set daytime brightness to 75
+  description: Set Master Bedroom light daytime brightness to 75
   trigger:
     platform: time
-    at: '12:00:00'
+    at: '10:00:00'
   action:
-  - service: homeassistant.turn_off
-    data: { brightness: 100 }
-    target:
-      entity_id:
-        - light.master_bedroom_light
+  - service: light.turn_on
+    target: 
+      entity_id: light.master_bedroom_light
+    data:
+      brightness_pct: 75
+- id: day_masterbedroom_light_brightness_off
+  alias: Master Bedroom Light - set daytime brightness to 75 - off
+  description: Set Master Bedroom light daytime brightness to 75
+  trigger:
+    platform: time
+    at: '10:01:00'
+  action:
+  - service: light.turn_off
+    target: 
+      entity_id: light.master_bedroom_light
 
 ##########################################################    
 # enable after holiday season
 ##########################################################
-# - id: external_lights_dark_on
-#   alias: External Lights - Evening On
-#   description: Turn on External Lights at dark
-#   trigger:
-#   - platform: numeric_state
-#     entity_id: sun.sun
-#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-#     below: -4.0
-#   action:
-#     service: homeassistant.turn_on
-#     entity_id: switch.external_lights
-# - id: external_lights_night_off
-#   alias: Externals Light - Night Off
-#   description: Turn off External Lights at midnight
-#   trigger:
-#     platform: time
-#     at: '23:59:00'
-#   action:
-#     service: homeassistant.turn_off
-#     entity_id: switch.external_lights
-# - id: plant_light_morning_on
-#   alias: Plant Light - Morning On
-#   description: Turn on Plant Light before sunrise
-#   trigger:
-#     platform: sun
-#     event: sunrise
-#     offset: -00:30:00
-#   action:
-#     - service: homeassistant.turn_on
-#       entity_id: switch.plant_light_02
-#     - service: homeassistant.turn_on
-#       entity_id: switch.plant_light_01
-# - id: plant_light_evening_off
-#   alias: Plant Light - Evening Off
-#   description: Turn off Plant Light at sunset
-#   trigger:
-#   - platform: numeric_state
-#     entity_id: sun.sun
-#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-#     below: -6.0
-#   action:
-#     - service: homeassistant.turn_off
-#       entity_id: switch.plant_light_01
-#     - service: homeassistant.turn_off
-#       entity_id: switch.plant_light_02
-########################################################## -- end enable
-
-##########################################################    
-# disable after holiday season
-##########################################################
-- id: holiday_lights_dark_on
-  alias: Holiday Lights - Evening On
-  description: Turn on Holiday Lights at dark
+- id: external_lights_dark_on
+  alias: External Lights - Evening On
+  description: Turn on External Lights at dark
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
     below: -4.0
   action:
-    - service: homeassistant.turn_on
-      entity_id: switch.front_eaves
-    - service: homeassistant.turn_on
-      entity_id: switch.plant_light_01 # outside x-mas light
-- id: holiday_lights_night_off
-  alias: Holiday Lights - Night Off
-  description: Turn off Holiday Lights at midnight
+    service: homeassistant.turn_on
+    entity_id: switch.external_lights
+- id: external_lights_night_off
+  alias: Externals Light - Night Off
+  description: Turn off External Lights at midnight
   trigger:
     platform: time
-    at: '02:00:00'
+    at: '23:59:00'
   action:
     service: homeassistant.turn_off
-    entity_id: switch.front_eaves
+    entity_id: switch.external_lights
 - id: plant_light_morning_on
   alias: Plant Light - Morning On
   description: Turn on Plant Light before sunrise
@@ -152,9 +110,7 @@
     - service: homeassistant.turn_on
       entity_id: switch.plant_light_02
     - service: homeassistant.turn_on
-      entity_id: switch.dual_outlet_one # plant light
-    - service: homeassistant.turn_on
-      entity_id: switch.dual_outlet_two # inside x-mas lights
+      entity_id: switch.plant_light_01
 - id: plant_light_evening_off
   alias: Plant Light - Evening Off
   description: Turn off Plant Light at sunset
@@ -165,9 +121,63 @@
     below: -6.0
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.plant_light_02
+      entity_id: switch.plant_light_01
     - service: homeassistant.turn_off
-      entity_id: switch.dual_outlet_one # plant light
+      entity_id: switch.plant_light_02
+######################################################### -- end enable
+
+##########################################################    
+# disable after holiday season
+##########################################################
+# - id: holiday_lights_dark_on
+#   alias: Holiday Lights - Evening On
+#   description: Turn on Holiday Lights at dark
+#   trigger:
+#   - platform: numeric_state
+#     entity_id: sun.sun
+#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+#     below: -4.0
+#   action:
+#     - service: homeassistant.turn_on
+#       entity_id: switch.front_eaves
+#     - service: homeassistant.turn_on
+#       entity_id: switch.plant_light_01 # outside x-mas light
+# - id: holiday_lights_night_off
+#   alias: Holiday Lights - Night Off
+#   description: Turn off Holiday Lights at midnight
+#   trigger:
+#     platform: time
+#     at: '02:00:00'
+#   action:
+#     service: homeassistant.turn_off
+#     entity_id: switch.front_eaves
+# - id: plant_light_morning_on
+#   alias: Plant Light - Morning On
+#   description: Turn on Plant Light before sunrise
+#   trigger:
+#     platform: sun
+#     event: sunrise
+#     offset: -00:30:00
+#   action:
+#     - service: homeassistant.turn_on
+#       entity_id: switch.plant_light_02
+#     - service: homeassistant.turn_on
+#       entity_id: switch.dual_outlet_one # plant light
+#     - service: homeassistant.turn_on
+#       entity_id: switch.dual_outlet_two # inside x-mas lights
+# - id: plant_light_evening_off
+#   alias: Plant Light - Evening Off
+#   description: Turn off Plant Light at sunset
+#   trigger:
+#   - platform: numeric_state
+#     entity_id: sun.sun
+#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+#     below: -6.0
+#   action:
+#     - service: homeassistant.turn_off
+#       entity_id: switch.plant_light_02
+#     - service: homeassistant.turn_off
+#       entity_id: switch.dual_outlet_one # plant light
 ########################################################## -- end disable
 - id: garage_door_delayed_off
   alias: Back Garage Door - Delayed Off
@@ -300,69 +310,92 @@
   - delay: 00:01:00
   mode: single
 
+- id: frontyard_motion_detected
+  alias: frontyard motion detected, turn on external lights
+  trigger:
+    type: motion
+    platform: device
+    device_id: 6c1b836e5eb3097d0614f453634ecd6b
+    entity_id: binary_sensor.front_door_4
+    domain: binary_sensor
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  - condition: time
+    after: '23:59:30'
+  action:
+  - service: homeassistant.turn_on
+    entity_id: switch.external_lights
+  - delay: 00:03:002
+  - service: homeassistant.turn_off
+    entity_id: switch.external_lights
+  - delay: 00:00:30
+  mode: single
+
 #########################################################################
 ###  Temperature Control
 #########################################################################
-- id: thermostat_afternoon_run_fan
-  alias: Thermostat - run fan in afternoon
-  description: Run the fan for 10 minutes at 3:45 PM
-  trigger:
-  - platform: time
-    at: '15:45:00'
-  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement Shelly H&T 
-  action:
-    - service: climate.set_hvac_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        hvac_mode: 'off'
-    - service: climate.set_fan_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        fan_mode: 'on'
-    - delay: 00:10:00
-    - service: climate.set_fan_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        fan_mode: 'on'
-    - service: climate.set_hvac_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        hvac_mode: heat_cool
-  mode: single
-- id: thermostat_afternoon_run_fan_2
-  alias: Thermostat - run fan in late afternoon
-  description: Run the fan for 10 minutes at 4:30 PM
-  trigger:
-  - platform: time
-    at: '16:30:00'
-  condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly H&T
-  action:
-    - service: climate.set_hvac_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        hvac_mode: 'off'
-    - service: climate.set_fan_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        fan_mode: 'on'
-    - delay: 00:10:00
-    - service: climate.set_fan_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        fan_mode: 'on'
-    - service: climate.set_hvac_mode
-      target:
-        entity_id: climate.hallway_thermostat
-      data:
-        hvac_mode: heat_cool
-  mode: single
+# - id: thermostat_afternoon_run_fan
+#   alias: Thermostat - run fan in afternoon
+#   description: Run the fan for 10 minutes at 3:45 PM
+#   trigger:
+#   - platform: time
+#     at: '15:45:00'
+#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement Shelly H&T 
+#   action:
+#     - service: climate.set_hvac_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         hvac_mode: 'off'
+#     - service: climate.set_fan_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         fan_mode: 'on'
+#     - delay: 00:10:00
+#     - service: climate.set_fan_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         fan_mode: 'off'
+#     - service: climate.set_hvac_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         hvac_mode: heat_cool
+#   mode: single
+# - id: thermostat_afternoon_run_fan_2
+#   alias: Thermostat - run fan in late afternoon
+#   description: Run the fan for 10 minutes at 4:30 PM
+#   trigger:
+#   - platform: time
+#     at: '16:30:00'
+#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly H&T
+#   action:
+#     - service: climate.set_hvac_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         hvac_mode: 'off'
+#     - service: climate.set_fan_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         fan_mode: 'on'
+#     - delay: 00:10:00
+#     - service: climate.set_fan_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         fan_mode: 'off'
+#     - service: climate.set_hvac_mode
+#       target:
+#         entity_id: climate.hallway_thermostat
+#       data:
+#         hvac_mode: heat_cool
+#   mode: single
 
 - id: thermostat_night_temperature
   alias: Thermostat - set nighttime temperature range
@@ -373,7 +406,7 @@
   action:
     - service: climate.set_temperature
       data:
-        target_temp_high: 76
+        target_temp_high: 78
         target_temp_low: 59
         hvac_mode: heat_cool
       target:
@@ -384,16 +417,32 @@
   description: Set the thermostat the daytime temperature range
   trigger:
   - platform: time
-    at: "00:05:30"
+    at: "12:01:00"
   action:
     - service: climate.set_temperature
       data:
-        target_temp_high: 76
+        target_temp_high: 74
         target_temp_low: 65
         hvac_mode: heat_cool
       target:
         entity_id: climate.hallway_thermostat
   mode: single
+- id: thermostat_evening_temperature
+  alias: Thermostat - set evening temperature range
+  description: Set the thermostat the evening temperature range
+  trigger:
+  - platform: time
+    at: "15:00:00"
+  action:
+    - service: climate.set_temperature
+      data:
+        target_temp_high: 77
+        target_temp_low: 64
+        hvac_mode: heat_cool
+      target:
+        entity_id: climate.hallway_thermostat
+  mode: single
+
 #########################################################################
 ###  Shelly
 #########################################################################

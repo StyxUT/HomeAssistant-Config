@@ -28,6 +28,12 @@ http:
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
+# Example LL-HLS configuration.yaml entry.
+stream:
+  ll_hls: true
+  part_duration: 0.75  # Range of 0.2 to 1.5
+  segment_duration: 6  # Range of 2 to 10
+
 notify:
   - name: home_resident_devices
     platform: group
@@ -75,9 +81,9 @@ neato:
   client_id: !secret neato_client_id
   client_secret: !secret neato_client_secret
 
-# landroid_cloud:
-#   - email: !secret landroid_mail
-#     password: !secret landroid_pass
+landroid_cloud:
+  - email: !secret landroid_mail
+    password: !secret landroid_pass
 
 nest:
   client_id: !secret nest_client_id
@@ -140,7 +146,6 @@ ios:
     icon:
       icon: hass:weather-night
       color: "#951ad3"
-  actions:
   - name: "Let's Go To Work"
     background_color: "color: "#33adff"
     label:
