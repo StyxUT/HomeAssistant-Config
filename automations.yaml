@@ -23,6 +23,9 @@
   action:
   - service: homeassistant.turn_on
     entity_id: switch.salt_lamp
+  - delay: '00:10:00'
+  - service: light.turn_on
+    entity_id: light.kitchen_string_lights
   mode: single
 - id: kitchen_light_evening_on
   alias: Kitchen Light - Evening On
@@ -75,6 +78,33 @@
   - service: light.turn_off
     target: 
       entity_id: light.master_bedroom_light
+
+- id: ariving_home_turn_on_external_lights
+  alias: Ariving home, turn on external lights
+  description: Someone is ariving home, turn on the external lights for 6 minutes.
+  trigger:
+    platform: state
+    entity_id: 
+      - person.StyxUT
+      - person.traci
+      - person.samantha
+  condition:
+  - condition: template
+    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  - condition: state
+    entity_id: switch.external_lights
+    state: 'off'
+  action:
+  - delay: 00:01:00
+  - service: homeassistant.turn_on
+    entity_id: switch.external_lights
+  - delay: 00:06:00
+  - service: homeassistant.turn_off
+    entity_id: switch.external_lights
+
 
 ##########################################################    
 # enable after holiday season
@@ -193,31 +223,6 @@
   - service: homeassistant.turn_off
     entity_id: switch.garage_door
 
-- id: ariving_home_turn_on_external_lights
-  alias: Ariving home, turn on external lights
-  description: Someone is ariving home, turn on the external lights for 6 minutes.
-  trigger:
-    platform: state
-    entity_id: 
-      - person.StyxUT
-      - person.traci
-      - person.samantha
-  condition:
-  - condition: template
-    value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
-  - condition: state
-    entity_id: switch.external_lights
-    state: 'off'
-  action:
-  - delay: 00:01:00
-  - service: homeassistant.turn_on
-    entity_id: switch.external_lights
-  - delay: 00:06:00
-  - service: homeassistant.turn_off
-    entity_id: switch.external_lights
 
 #########################################################################
 ###  Notifications
@@ -229,9 +234,9 @@
   trigger:
     - platform: zone
       entity_id:
-         - person.traci
-         - person.styxut
-         - person.samantha
+        - person.traci
+        - person.styxut
+        - person.samantha
       zone: zone.home_area
       event: enter
   action:
@@ -269,21 +274,32 @@
   trigger:
     - platform: zone
       entity_id:
-      - person.traci
+        - person.traci
       zone: zone.traci_work
-      event: enter
-  condition:
-  - condition: time
-    after: '14:00:00'
-    before: '22:00:00'
+      event: leave
   action:
-  - service: >
-      notify.styx_devices
-    data:
-      title: >
-        "{{ trigger.to_state.attributes.friendly_name }} has left work"
-      message: >
-        "{{ trigger.to_state.attributes.friendly_name }} has left work."
+    - service: notify.styx_devices
+      data:
+        title: >
+          "{{ trigger.to_state.attributes.friendly_name }} Leaving Work"
+        message: >
+          "{{ trigger.to_state.attributes.friendly_name }} has left work for the day."
+  mode: single
+
+- id: notify_leaving_arena_condition_car
+  alias: Notify when leaving arena to condition car
+  description: Send a notification reminder to condition the car
+  trigger:
+    - platform: zone
+      entity_id:
+        - person.styxut
+      zone: zone.arena
+      event: leave
+  action:
+    - service: notify.styx_devices
+      data:
+        title: "Reminder: Condition Car"
+        message: "Remember to condition the car upon leaving the arena."
   mode: single
 
 #########################################################################
@@ -310,8 +326,8 @@
   - delay: 00:01:00
   mode: single
 
-- id: frontyard_motion_detected
-  alias: frontyard motion detected, turn on external lights
+- id: fron_tyard_motion_detected
+  alias: Front yard motion detected, turn on external lights
   trigger:
     type: motion
     platform: device
@@ -319,19 +335,19 @@
     entity_id: binary_sensor.front_door_4
     domain: binary_sensor
   condition:
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
-  - condition: time
-    after: '23:59:30'
+    - and:
+      - condition: time
+        after: '00:02:00'
+      - condition: sun
+        before: sunrise
   action:
   - service: homeassistant.turn_on
     entity_id: switch.external_lights
-  - delay: 00:03:002
+  - delay: 00:03:00
   - service: homeassistant.turn_off
     entity_id: switch.external_lights
-  - delay: 00:00:30
-  mode: single
+  - delay: 00:00:15
+  mode: restart
 
 #########################################################################
 ###  Temperature Control

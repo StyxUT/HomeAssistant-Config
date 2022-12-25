@@ -15,3 +15,9 @@
   longitude: !secret traci_work_longitude
   radius: 265.01048816420985
   icon: mdi:account-multiple
+
+- name: Arena
+  latitude:  !secret arena_latitude
+  longitude: !secret arena_longitude
+  radius: 137.4794115321084
+  icon: mdi:account-multiple

@@ -7,6 +7,7 @@ homeassistant:
   longitude: !secret home_longitude
   internal_url: "http://homeassistant.home:8123"
   external_url: !secret external_url
+  country: "US"
   currency: USD
   auth_providers:
   - type: homeassistant
@@ -24,7 +25,7 @@ http:
     - 10.0.0.0/8
     - 192.168.0.0/24
     - 192.168.107.0/24
-    - 127.0.0.1
+    - 127.0.0.1/32
   ip_ban_enabled: true
   login_attempts_threshold: 10
 
@@ -50,14 +51,14 @@ notify:
 python_script:
 
 # MQTT - mosquitto
-mqtt:
-  broker: k3s-nodes.home
-  port: 1883
-  client_id: home-assistant
-  discovery: true
-  discovery_prefix: homeassistant
-  # username: !secret mqtt-user
-  # password: !secret mqtt-password
+# mqtt:
+#   broker: k3s-nodes.home
+#   port: 1883
+#   client_id: home-assistant
+#   discovery: true
+#   discovery_prefix: homeassistant
+#   # username: !secret mqtt-user
+#   # password: !secret mqtt-password
 
 # Text to speech
 tts:
@@ -149,10 +150,10 @@ ios:
   - name: "Let's Go To Work"
     background_color: "color: "#33adff"
     label:
-      text: "Let's Go To Bed."
+      text: "Let's Go To Work."
       color: "#33adff"
     icon:
-      icon: hass:weather-night
+      icon: hass:weather-day
       color: "#33adff"
 # # actions:
 #   - name: "Turn On VR"

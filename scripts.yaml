@@ -9,9 +9,9 @@ lets_go_to_bed:
   - service: homeassistant.turn_off
     entity_id: switch.monitor_power
   - service: script.turn_on
-    entity_id: script.bed_time_fan_sequence
+    entity_id: script.bedtime_fan_sequence
   - service: script.turn_on
-    entity_id: script.bed_time_light_sequence
+    entity_id: script.bedtime_light_sequence
   mode: restart
   icon: hass:weather-night
 
@@ -29,8 +29,8 @@ lets_go_to_work:
     - switch.desk_power
     - switch.kitchen_light
     - switch.bonus_room_enterance_light
-  # - delay:
-  #   minutes: 15
+  - delay:
+      minutes: 15
   - service: homeassistant.turn_off
     entity_id:
     - light.master_bedroom_light
@@ -39,8 +39,8 @@ lets_go_to_work:
   mode: restart
   icon: mdi:briefcase-clock
 
-bed_time_light_sequence:
-  alias: Bed time light sequence
+bedtime_light_sequence:
+  alias: Bedtime light sequence
   description: Lighting sequence when heading to bed
   sequence:
   - service: homeassistant.turn_on
@@ -71,6 +71,10 @@ bed_time_light_sequence:
       minutes: 2
   - service: homeassistant.turn_off
     entity_id: switch.deck_light
+  - delay:
+      seconds: 30
+  - service: light.turn_off
+    entity_id: light.kitchen_string_lights
   - delay:
       seconds: 30
   - service: homeassistant.turn_off
@@ -111,9 +115,8 @@ bed_time_light_sequence:
       - switch.dual_outlet_two
   mode: restart
   icon: hass:weather-night
-
-bed_time_fan_sequence:
-  alias: Bed time fan sequence
+bedtime_fan_sequence:
+  alias: Bedtime fan sequence
   description: Fan sequence when heading to bed
   sequence:
   - condition: numeric_state
@@ -125,13 +128,50 @@ bed_time_fan_sequence:
     entity_id: switch.master_bedroom_fan
   - repeat:
       while:
-        - condition: numeric_state
-          entity_id: sensor.hallway_thermostat_current_temperature
-          above: 70
+      - condition: numeric_state
+        entity_id: sensor.hallway_thermostat_current_temperature
+        above: 70
       sequence:
-        - delay:
-            minutes: 15
+      - delay:
+          minutes: 15
   - service: homeassistant.turn_off
     entity_id: switch.master_bedroom_fan
   mode: restart
   icon: hass:weather-night
+color_loop:
+  alias: Christmas Color Loop
+  use_blueprint:
+    path: mdolnik/color_loop.yaml
+    input:
+      light: light.kitchen_string_lights
+      transition:
+        hours: 0
+        minutes: 0
+        seconds: 15
+      color_1:
+      - 153
+      - 0
+      - 0
+      color_2:
+      - 0
+      - 128
+      - 0
+      color_3:
+      - 28
+      - 28
+      - 28
+      color_4:
+      - 28
+      - 28
+      - 28
+      color_5:
+      - 28
+      - 28
+      - 28
+      color_6:
+      - 28
+      - 28
+      - 28
+      max_color_distance: 30
+  icon: mdi:axis-x-rotate-clockwise
+  mode: single
