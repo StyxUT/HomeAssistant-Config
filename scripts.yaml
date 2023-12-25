@@ -3,7 +3,7 @@ lets_go_to_bed:
   description: Lighting sequence when heading to bed
   sequence:
   - service: homeassistant.turn_off
-    entity_id: switch.desk_power
+    entity_id: switch.desktop_power
   - service: homeassistant.turn_off
     entity_id: switch.standing_desk_power
   - service: homeassistant.turn_off
@@ -26,7 +26,7 @@ lets_go_to_work:
   - service: homeassistant.turn_on
     entity_id:
     - switch.standing_desk_power
-    - switch.desk_power
+    - switch.desktop_power
     - switch.kitchen_light
     - switch.bonus_room_enterance_light
   - delay:
@@ -115,6 +115,7 @@ bedtime_light_sequence:
       - switch.dual_outlet_two
   mode: restart
   icon: hass:weather-night
+
 bedtime_fan_sequence:
   alias: Bedtime fan sequence
   description: Fan sequence when heading to bed
@@ -123,7 +124,7 @@ bedtime_fan_sequence:
     entity_id: sensor.hallway_thermostat_current_temperature
     above: 68
   - delay:
-      minutes: 5
+      minutes: 2
   - service: homeassistant.turn_on
     entity_id: switch.master_bedroom_fan
   - repeat:
@@ -133,11 +134,12 @@ bedtime_fan_sequence:
         above: 70
       sequence:
       - delay:
-          minutes: 15
+          minutes: 20
   - service: homeassistant.turn_off
     entity_id: switch.master_bedroom_fan
   mode: restart
   icon: hass:weather-night
+
 color_loop:
   alias: Christmas Color Loop
   use_blueprint:

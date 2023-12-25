@@ -10,14 +10,14 @@
   radius: 1569.1240406853476
   icon: mdi:account-multiple
 
-- name: Traci Work
-  latitude:  !secret traci_work_latitude
-  longitude: !secret traci_work_longitude
-  radius: 265.01048816420985
-  icon: mdi:account-multiple
-
 - name: Arena
   latitude:  !secret arena_latitude
   longitude: !secret arena_longitude
   radius: 137.4794115321084
+  icon: mdi:account-multiple
+
+- name: Station Parking
+  latitude:  !secret station_parking_latitude
+  longitude: !secret station_parking_longitude
+  radius: 63
   icon: mdi:account-multiple

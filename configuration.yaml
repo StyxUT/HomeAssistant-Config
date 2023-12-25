@@ -41,7 +41,7 @@ notify:
     services: 
     - service: mobile_app_styx_iphone
     - service: mobile_app_styx_ipad
-    - service: mobile_app_fairys_iphone
+    - service: mobile_app_fairysaurus
   - name: styx_devices
     platform: group
     services: 
@@ -103,18 +103,23 @@ shelly:
 #   ssl: true
 #   port: 5001
 
-# tplink:
-#   discovery: true
-#   switch:
-#     - host: !secret vr_main
-#     - host: !secret vr_sensor_1
-#     - host: !secret vr_sensor_2
-#     - host: !secret front_eaves
-#     - host: !secret back_eaves
-#     - host: !secret external_lights
-#     - host: !secret bonus_room_entrance_light
-#     - host: !secret deck_light
-#     - host: !secret external_dual_outlet
+tplink:
+  discovery: true
+  light:
+    - host: !secret front_eaves
+    - host: !secret back_eaves
+    - host: !secret external_lights
+    - host: !secret bonus_room_entrance_light
+    - host: !secret deck_light
+    - host: !secret external_dual_outlet
+  switch:
+    - host: !secret vr_main
+    - host: !secret vr_sensor_1
+    - host: !secret vr_sensor_2
+    - host: !secret plant_room
+    - host: !secret plant_light_1
+    - host: !secret plant_light_2
+    - host: !secret monitor_power
 
 wemo:
   discovery: false
@@ -126,8 +131,7 @@ wemo:
     - !secret master_bedroom_lamp
     - !secret salt_lamp
     # smaller plugs
-    - !secret plant_light_01
-    - !secret plant_light_02
+    - !secret standing_desk_power
     - !secret desk_power
 
 #group: !include groups.yaml

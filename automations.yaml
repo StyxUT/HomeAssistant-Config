@@ -1,13 +1,10 @@
-#########################################################################
-###  Light Control
-#########################################################################
 - id: bonus_room_enterance_light_on_at_sunset
   alias: Bonus Room Enterence Light - Evening On
   description: Turn on Bonus Room Enterence Light at sunset
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
     below: 4
   action:
     service: homeassistant.turn_on
@@ -18,12 +15,12 @@
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
     below: -5.0
   action:
   - service: homeassistant.turn_on
     entity_id: switch.salt_lamp
-  - delay: '00:10:00'
+  - delay: 00:10:00
   - service: light.turn_on
     entity_id: light.kitchen_string_lights
   mode: single
@@ -33,7 +30,7 @@
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
     below: 4
   action:
     service: homeassistant.turn_on
@@ -64,10 +61,14 @@
     at: '10:00:00'
   action:
   - service: light.turn_on
-    target: 
+    target:
       entity_id: light.master_bedroom_light
     data:
       brightness_pct: 75
+  - delay: 00:02:00
+  - service: light.turn_off
+    target:
+      entity_id: light.master_bedroom_light
 - id: day_masterbedroom_light_brightness_off
   alias: Master Bedroom Light - set daytime brightness to 75 - off
   description: Set Master Bedroom light daytime brightness to 75
@@ -76,18 +77,51 @@
     at: '10:01:00'
   action:
   - service: light.turn_off
-    target: 
+    target:
       entity_id: light.master_bedroom_light
-
+- id: plant_lights_morning_on
+  alias: Plant Lights - Morning On
+  description: Turn on the plant lights around sun rise
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
+    above: 5.0
+  action:
+  - service: homeassistant.turn_on
+    entity_id: switch.plant_room
+  - delay: 00:00:30
+  - service: homeassistant.turn_on
+    entity_id: switch.plant_light_1
+  - delay: 00:00:30
+  - service: homeassistant.turn_on
+    entity_id: swith.plant_light_2
+- id: plant_lights_evening_off
+  alias: Plant Lights - Evening Off
+  description: Turn off the plant lights around sun set
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
+    below: -5.0
+  action:
+  - service: homeassistant.turn_off
+    entity_id: switch.plant_room
+  - delay: 00:00:30
+  - service: homeassistant.turn_off
+    entity_id: switch.plant_light_1
+  - delay: 00:00:30
+  - service: homeassistant.turn_off
+    entity_id: swith.plant_light_2
 - id: ariving_home_turn_on_external_lights
   alias: Ariving home, turn on external lights
   description: Someone is ariving home, turn on the external lights for 6 minutes.
   trigger:
     platform: state
-    entity_id: 
-      - person.StyxUT
-      - person.traci
-      - person.samantha
+    entity_id:
+    - person.StyxUT
+    - person.traci
+    - person.samantha
   condition:
   - condition: template
     value_template: '{{ trigger.from_state.state != trigger.to_state.state }}'
@@ -104,18 +138,33 @@
   - delay: 00:06:00
   - service: homeassistant.turn_off
     entity_id: switch.external_lights
-
-
-##########################################################    
-# enable after holiday season
-##########################################################
+- id: bug_zapper_evening_on
+  alias: Bug Zapper - Evening On
+  description: Turn on bug zapper after sunset
+  trigger:
+    platform: sun
+    event: sunset
+    offset: -00:30:00
+  action:
+  - service: homeassistant.turn_on
+    entity_id: switch.dual_outlet_one
+- id: bug_zapper_morning_off
+  alias: Bug Zapper - Morning off
+  description: Turn off bug zapper before sunrise
+  trigger:
+    platform: sun
+    event: sunrise
+    offset: -02:00:00
+  action:
+  - service: homeassistant.turn_off
+    entity_id: switch.dual_outlet_one
 - id: external_lights_dark_on
   alias: External Lights - Evening On
   description: Turn on External Lights at dark
   trigger:
   - platform: numeric_state
     entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
     below: -4.0
   action:
     service: homeassistant.turn_on
@@ -129,86 +178,6 @@
   action:
     service: homeassistant.turn_off
     entity_id: switch.external_lights
-- id: plant_light_morning_on
-  alias: Plant Light - Morning On
-  description: Turn on Plant Light before sunrise
-  trigger:
-    platform: sun
-    event: sunrise
-    offset: -00:30:00
-  action:
-    - service: homeassistant.turn_on
-      entity_id: switch.plant_light_02
-    - service: homeassistant.turn_on
-      entity_id: switch.plant_light_01
-- id: plant_light_evening_off
-  alias: Plant Light - Evening Off
-  description: Turn off Plant Light at sunset
-  trigger:
-  - platform: numeric_state
-    entity_id: sun.sun
-    value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-    below: -6.0
-  action:
-    - service: homeassistant.turn_off
-      entity_id: switch.plant_light_01
-    - service: homeassistant.turn_off
-      entity_id: switch.plant_light_02
-######################################################### -- end enable
-
-##########################################################    
-# disable after holiday season
-##########################################################
-# - id: holiday_lights_dark_on
-#   alias: Holiday Lights - Evening On
-#   description: Turn on Holiday Lights at dark
-#   trigger:
-#   - platform: numeric_state
-#     entity_id: sun.sun
-#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-#     below: -4.0
-#   action:
-#     - service: homeassistant.turn_on
-#       entity_id: switch.front_eaves
-#     - service: homeassistant.turn_on
-#       entity_id: switch.plant_light_01 # outside x-mas light
-# - id: holiday_lights_night_off
-#   alias: Holiday Lights - Night Off
-#   description: Turn off Holiday Lights at midnight
-#   trigger:
-#     platform: time
-#     at: '02:00:00'
-#   action:
-#     service: homeassistant.turn_off
-#     entity_id: switch.front_eaves
-# - id: plant_light_morning_on
-#   alias: Plant Light - Morning On
-#   description: Turn on Plant Light before sunrise
-#   trigger:
-#     platform: sun
-#     event: sunrise
-#     offset: -00:30:00
-#   action:
-#     - service: homeassistant.turn_on
-#       entity_id: switch.plant_light_02
-#     - service: homeassistant.turn_on
-#       entity_id: switch.dual_outlet_one # plant light
-#     - service: homeassistant.turn_on
-#       entity_id: switch.dual_outlet_two # inside x-mas lights
-# - id: plant_light_evening_off
-#   alias: Plant Light - Evening Off
-#   description: Turn off Plant Light at sunset
-#   trigger:
-#   - platform: numeric_state
-#     entity_id: sun.sun
-#     value_template: "{{ state_attr('sun.sun', 'elevation') }}"
-#     below: -6.0
-#   action:
-#     - service: homeassistant.turn_off
-#       entity_id: switch.plant_light_02
-#     - service: homeassistant.turn_off
-#       entity_id: switch.dual_outlet_one # plant light
-########################################################## -- end disable
 - id: garage_door_delayed_off
   alias: Back Garage Door - Delayed Off
   description: Turn off Garage Door after two hours
@@ -222,37 +191,28 @@
   - delay: 02:00:00
   - service: homeassistant.turn_off
     entity_id: switch.garage_door
-
-
-#########################################################################
-###  Notifications
-#########################################################################
-#https://community.home-assistant.io/t/automation-for-entering-and-leaving-zones/265000/3
 - id: notify_person_is_ariving_home
   alias: Notify when someone enters the Home Area
   description: Send a notification when someone enters the Home Area
   trigger:
-    - platform: zone
-      entity_id:
-        - person.traci
-        - person.styxut
-        - person.samantha
-      zone: zone.home_area
-      event: enter
+  - platform: zone
+    entity_id:
+    - person.traci
+    - person.styxut
+    - person.samantha
+    zone: zone.home_area
+    event: enter
   action:
-    - service: >
-        {% if trigger.from_state.attributes.friendly_name == 'Traci' %}
-          notify.styx_devices
-        {% else %}
-          notify.home_resident_devices
-        {% endif %}
-      data:
-        title: >
-          "{{ trigger.to_state.attributes.friendly_name }} is Arriving Home"
-        message: >
-          "{{ trigger.to_state.attributes.friendly_name }} is arriving home."
-  mode: single
+  - service: "{% if trigger.from_state.attributes.friendly_name == 'Traci' %}\n  notify.styx_devices\n{%
+      else %}\n  notify.home_resident_devices\n{% endif %}\n"
+    data:
+      title: '"{{ trigger.to_state.attributes.friendly_name }} is Arriving Home"
 
+        '
+      message: '"{{ trigger.to_state.attributes.friendly_name }} is arriving home."
+
+        '
+  mode: single
 - id: notify_on_UPS_status_change
   alias: Notify that UPS status has changed
   description: Notify when the UPS status has changed
@@ -262,49 +222,109 @@
   action:
   - service: notify.home_resident_devices
     data:
-      title: 'UPS Status Changed'
-      message: >
-        "UPS status has changed from '{{ trigger.from_state.state }}' to '{{ trigger.to_state.state }}'.
-        Verify that the server is fully powered on."
-  mode: single
+      title: UPS Status Changed
+      message: '"UPS status has changed from ''{{ trigger.from_state.state }}'' to
+        ''{{ trigger.to_state.state }}''. Verify that the server is fully powered
+        on."
 
+        '
+  mode: single
 - id: notify_traci_leaves_work
   alias: Notify when Traci leaves work for the day
   description: Send notification when Traci leaves work for the day
   trigger:
-    - platform: zone
-      entity_id:
-        - person.traci
-      zone: zone.traci_work
-      event: leave
+  - platform: zone
+    entity_id:
+    - person.traci
+    zone: zone.traci_work
+    event: leave
   action:
-    - service: notify.styx_devices
-      data:
-        title: >
-          "{{ trigger.to_state.attributes.friendly_name }} Leaving Work"
-        message: >
-          "{{ trigger.to_state.attributes.friendly_name }} has left work for the day."
-  mode: single
+  - service: notify.styx_devices
+    data:
+      title: '"{{ trigger.to_state.attributes.friendly_name }} Leaving Work"
 
-- id: notify_leaving_arena_condition_car
-  alias: Notify when leaving arena to condition car
-  description: Send a notification reminder to condition the car
+        '
+      message: '"{{ trigger.to_state.attributes.friendly_name }} has left work for
+        the day."
+
+        '
+  mode: single
+- id: notify_leaving_arena_car_conditioning_started
+  alias: Notify when leaving arena that car conditioning has started
+  description: Send a notification that car conditioning has started
   trigger:
-    - platform: zone
-      entity_id:
-        - person.styxut
-      zone: zone.arena
-      event: leave
+  - platform: zone
+    entity_id:
+    - person.styxut
+    zone: zone.arena
+    event: leave
+  condition:
+  - condition: zone
+    entity_id: device_tracker.charon_location_tracker
+    zone: zone.station_parking
   action:
-    - service: notify.styx_devices
-      data:
-        title: "Reminder: Condition Car"
-        message: "Remember to condition the car upon leaving the arena."
+  - service: homeassistant.turn_on
+    entity_id: climate.charon_hvac_climate_system
+  - service: notify.styx_devices
+    data:
+      title: 'Reminder: Condition Car'
+      message: Remember to condition the car upon leaving the arena.
   mode: single
-
-#########################################################################
-###  Night Motion Detection
-#########################################################################
+- id: notify_charon_charging_stopped
+  alias: Notify driver that charging of Charon has been stopped by HomeAssistant
+  description: Notify driver that charging of Charon has been stopped by HomeAssistant
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.tesla_wall_connector_south_vehicle_connected
+    from: 'off'
+    to: 'on'
+  action:
+  - service: homeassistant.turn_off
+    entity_id: switch.charon_charger
+  - service: notify.styx_devices
+    data:
+      title: Charon - Charging Stopped
+      message: Charon - Charging has been stopped by HomeAssistant
+  mode: single
+- id: enable_power_for_riolink_e1_pro_cameras
+  alias: Enable power for RioLink E1 Pro cameras
+  description: turn on power to camaras when no one is home
+  trigger:
+    platform: state
+    entity_id: person.traci, person.styxut, person.samantha
+    to: not_home
+  condition:
+    condition: and
+    conditions:
+    - condition: state
+      entity_id: person.traci
+      state: not_home
+    - condition: state
+      entity_id: person.styxut
+      state: not_home
+    - condition: state
+      entity_id: person.samantha
+      state: not_home
+  action:
+  - service: switch.turn_on
+    entity_id: switch.riolink_e1_pro_1
+  - service: switch.turn_on
+    entity_id: switch.riolink_e1_pro_2
+  mode: single
+- id: disable_power_for_riolink_e1_pro_cameras
+  alias: Disable power for RioLink E1 Pro cameras
+  description: turn off power to cameras when anyone is home
+  trigger:
+    platform: state
+    entity_id: person.traci, person.styxut, person.samantha
+    to: home
+  action:
+  - service: switch.turn_off
+    entity_id: switch.riolink_e1_pro_1
+  - service: switch.turn_off
+    entity_id: switch.riolink_e1_pro_2
+  mode: single
 - id: backyard_motion_detected
   alias: Backyard motion detected, turn on deck light
   trigger:
@@ -320,155 +340,89 @@
   action:
   - service: homeassistant.turn_on
     entity_id: switch.deck_light
-  - delay: 00:03:00
+  - delay: 00:06:00
   - service: homeassistant.turn_off
     entity_id: switch.deck_light
-  - delay: 00:01:00
-  mode: single
-
-- id: fron_tyard_motion_detected
+  - delay: 00:00:05
+  mode: restart
+- id: front_yard_motion_detected
   alias: Front yard motion detected, turn on external lights
   trigger:
-    type: motion
+  - type: motion
     platform: device
     device_id: 6c1b836e5eb3097d0614f453634ecd6b
-    entity_id: binary_sensor.front_door_4
+    entity_id: 225fbe9c304959c91e1dd7e027080ab7
     domain: binary_sensor
   condition:
-    - and:
-      - condition: time
-        after: '00:02:00'
-      - condition: sun
-        before: sunrise
+  - and:
+    - condition: time
+      after: 00:02:00
+    - condition: sun
+      before: sunrise
   action:
   - service: homeassistant.turn_on
     entity_id: switch.external_lights
-  - delay: 00:03:00
+  - delay:
+      hours: 0
+      minutes: 20
+      seconds: 0
+      milliseconds: 0
   - service: homeassistant.turn_off
     entity_id: switch.external_lights
-  - delay: 00:00:15
-  mode: restart
-
-#########################################################################
-###  Temperature Control
-#########################################################################
-# - id: thermostat_afternoon_run_fan
-#   alias: Thermostat - run fan in afternoon
-#   description: Run the fan for 10 minutes at 3:45 PM
-#   trigger:
-#   - platform: time
-#     at: '15:45:00'
-#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement Shelly H&T 
-#   action:
-#     - service: climate.set_hvac_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         hvac_mode: 'off'
-#     - service: climate.set_fan_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         fan_mode: 'on'
-#     - delay: 00:10:00
-#     - service: climate.set_fan_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         fan_mode: 'off'
-#     - service: climate.set_hvac_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         hvac_mode: heat_cool
-#   mode: single
-# - id: thermostat_afternoon_run_fan_2
-#   alias: Thermostat - run fan in late afternoon
-#   description: Run the fan for 10 minutes at 4:30 PM
-#   trigger:
-#   - platform: time
-#     at: '16:30:00'
-#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs >= 4 }}" # basement shelly H&T
-#   action:
-#     - service: climate.set_hvac_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         hvac_mode: 'off'
-#     - service: climate.set_fan_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         fan_mode: 'on'
-#     - delay: 00:10:00
-#     - service: climate.set_fan_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         fan_mode: 'off'
-#     - service: climate.set_hvac_mode
-#       target:
-#         entity_id: climate.hallway_thermostat
-#       data:
-#         hvac_mode: heat_cool
-#   mode: single
-
+  - delay: 00:00:05
+  mode: single
 - id: thermostat_night_temperature
   alias: Thermostat - set nighttime temperature range
   description: Set the thermostat the nighttime temperature range
   trigger:
   - platform: time
-    at: "00:01:00"
+    at: 00:01:00
   action:
-    - service: climate.set_temperature
-      data:
-        target_temp_high: 78
-        target_temp_low: 59
-        hvac_mode: heat_cool
-      target:
-        entity_id: climate.hallway_thermostat
+  - service: climate.set_temperature
+    data:
+      target_temp_high: 78
+      target_temp_low: 56
+      hvac_mode: heat_cool
+    target:
+      entity_id: climate.hallway_thermostat_2
   mode: single
 - id: thermostat_day_temperature
   alias: Thermostat - set daytime temperature range
   description: Set the thermostat the daytime temperature range
   trigger:
   - platform: time
-    at: "12:01:00"
+    at: '12:01:00'
   action:
-    - service: climate.set_temperature
-      data:
-        target_temp_high: 74
-        target_temp_low: 65
-        hvac_mode: heat_cool
-      target:
-        entity_id: climate.hallway_thermostat
+  - service: climate.set_temperature
+    data:
+      target_temp_high: 74
+      target_temp_low: 65
+      hvac_mode: heat_cool
+    target:
+      entity_id: climate.hallway_thermostat_2
   mode: single
 - id: thermostat_evening_temperature
   alias: Thermostat - set evening temperature range
   description: Set the thermostat the evening temperature range
   trigger:
   - platform: time
-    at: "15:00:00"
+    at: '15:00:00'
   action:
-    - service: climate.set_temperature
-      data:
-        target_temp_high: 77
-        target_temp_low: 64
-        hvac_mode: heat_cool
-      target:
-        entity_id: climate.hallway_thermostat
+  - service: climate.set_temperature
+    data:
+      target_temp_high: 77
+      target_temp_low: 64
+      hvac_mode: heat_cool
+    target:
+      entity_id: climate.hallway_thermostat_2
   mode: single
-
-#########################################################################
-###  Shelly
-#########################################################################
 - id: shellies_announce
-  alias: 'Shellies Announce'
+  alias: Shellies Announce
   trigger:
-    - platform: homeassistant
-      event: start
-    - platform: time_pattern
-      minutes: "/30"  # Modifying this if you are using Shelly Motion can drain your device's battery quickly.
+  - platform: homeassistant
+    event: start
+  - platform: time_pattern
+    minutes: /30
   action:
     service: mqtt.publish
     data:
@@ -476,7 +430,7 @@
       payload: announce
   mode: single
 - id: shellies_discovery
-  alias: 'Shellies Discovery'
+  alias: Shellies Discovery
   mode: queued
   max: 999
   trigger:
@@ -490,18 +444,3 @@
       fw_ver: '{{ trigger.payload_json.fw_ver }}'
       model: '{{ trigger.payload_json.model }}'
       mode: '{{ trigger.payload_json.mode | default }}'
-
-# - id: aaa_test_automation
-#   alias: aaa_test_automation
-#   description: aaa_test_automation
-#   trigger:
-#   - platform: state
-#     entity_id: switch.bonus_room_enterance_light
-#     to: 'on'
-#   condition: "{{ ((states('sensor.shelly_h_t_ac7dca_temperature') | float) - (states('sensor.hallway_temperature') | float)) | abs <= 5 }}"
-#   # "{{ states('sensor.shelly_h_t_ac7dca_temperature') | float < 100 }}" #<-  works
-#   # "{{ states('sensor.hallway_temperature') | float < 100 }}" #<-  works
-#   action:
-#     - service: homeassistant.turn_on
-#       entity_id: switch.desk_power
-#   mode: single
